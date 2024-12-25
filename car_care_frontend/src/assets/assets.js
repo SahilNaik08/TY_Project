@@ -78,213 +78,168 @@ export const serviceTypeData = [
 
 export const Centers = [
     {
-        _id: 'doc1',
+        _id: 'sc1',
         name: 'B.N.Thakur & Co Garage',
         image: sc,
         serviceType: 'All Round',
-        degree: 'MBBS',
-        experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        city: 'Panjim',
+        contact: '086000 90090',
+        services_offered: 'Car wash, Car maintenance, Repairs, Tuning.',
         fees: 50,
-        address: {
-            line1: '17th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        state: 'Goa' 
     },
     {
-        _id: 'doc2',
+        _id: 'sc2',
         name: 'Sparkle And Shine Car Wash & Detailer',
         image: sparkle,
         serviceType: 'Car Wash',
-        degree: 'MBBS',
-        experience: '3 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 60,
-        address: {
-            line1: '27th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '9326790578',
+        services_offered: 'Car wash, Car maintenance.',
+        fees: 20,
+        state: 'Goa' 
     },
     {
-        _id: 'doc3',
+        _id: 'sc3',
         name: '3M Car Care',
         image: m3m,
         serviceType: 'Car Maintenance',
-        degree: 'MBBS',
-        experience: '1 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 30,
-        address: {
-            line1: '37th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '7745891133',
+        services_offered: 'Car wash, Car maintenance.',
+        fees: 20,
+        state: 'Goa'
     },
     {
-        _id: 'doc4',
+        _id: 'sc4',
         name: 'In & out auto repair',
         image: sc,
         serviceType: 'Repairs',
-        degree: 'MBBS',
-        experience: '2 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 40,
-        address: {
-            line1: '47th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '7507643553',
+        services_offered: 'Engine Repair, Body Repair, etc.',
+        fees: 20,
+        state: 'Goa'
     },
     {
-        _id: 'doc5',
+        _id: 'sc5',
         name: 'Manic Mechanic',
         image: manic,
         serviceType: 'Spare Parts',
-        degree: 'MBBS',
-        experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 50,
-        address: {
-            line1: '57th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '9422900097',
+        services_offered: 'Deals with all types of spare parts',
+        fees: 20,
+        state: 'Goa'
     },
     {
-        _id: 'doc6',
+        _id: 'sc6',
         name: 'Autotech Boss',
         image: autotech,
         serviceType: 'All Round',
-        degree: 'MBBS',
-        experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 50,
-        address: {
-            line1: '57th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '7350533618',
+        services_offered: 'Car wash, Car maintenance, Repairs, Tuning.',
+        fees: 20,
+        state: 'Goa'
     },
     {
-        _id: 'doc7',
+        _id: 'sc7',
         name: 'Good Shine Elma',
         image: sc,
         serviceType: 'All Round',
-        degree: 'MBBS',
-        experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 50,
-        address: {
-            line1: '17th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '9921475880',
+        services_offered: 'Car wash, Car maintenance, Repairs, Tuning.',
+        fees: 20,
+        state: 'Goa'
     },
     {
-        _id: 'doc8',
+        _id: 'sc8',
         name: 'Shantadurga foam washing center',
         image: sc,
         serviceType: 'Car Wash',
-        degree: 'MBBS',
-        experience: '3 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 60,
-        address: {
-            line1: '27th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '9326790578',
+        services_offered: 'Car wash, Car maintenance.',
+        fees: 20,
+        state: 'Goa'
     },
     {
-        _id: 'doc9',
+        _id: 'sc9',
         name: 'Car Clean n Care',
         image: sc,
         serviceType: 'Car Wash',
-        degree: 'MBBS',
-        experience: '1 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 30,
-        address: {
-            line1: '37th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '9326790578',
+        services_offered: 'Car wash, Car maintenance.',
+        fees: 20,
+        state: 'Goa'
     },
     {
-        _id: 'doc10',
+        _id: 'sc10',
         name: 'Sandeep Garage ',
         image: sc,
         serviceType: 'Spare Parts',
-        degree: 'MBBS',
-        experience: '2 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 40,
-        address: {
-            line1: '47th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '9326790578',
+        services_offered: 'Car wash, Car maintenance.',
+        fees: 20,
+        state: 'Goa'
     },
     {
-        _id: 'doc11',
+        _id: 'sc11',
         name: 'Detailing Daddy',
         image: sc,
         serviceType: 'All Round',
-        degree: 'MBBS',
-        experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 50,
-        address: {
-            line1: '57th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '9326790578',
+        services_offered: 'Car wash, Car maintenance.',
+        fees: 20,
+        state: 'Goa'
     },
     {
-        _id: 'doc12',
+        _id: 'sc12',
         name: 'Shree Service Point',
         image: sc,
         serviceType: 'Car Maintenance',
-        degree: 'MBBS',
-        experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 50,
-        address: {
-            line1: '57th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '9326790578',
+        services_offered: 'Car wash, Car maintenance.',
+        fees: 20,
+        state: 'Goa'
     },
     {
-        _id: 'doc13',
+        _id: 'sc13',
         name: 'Talaulikar Auto Services',
         image: sc,
         serviceType: 'Repairs',
-        degree: 'MBBS',
-        experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 50,
-        address: {
-            line1: '17th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '9326790578',
+        services_offered: 'Car wash, Car maintenance.',
+        fees: 20,
+        state: 'Goa'
     },
     {
-        _id: 'doc14',
+        _id: 'sc14',
         name: 'WOW Car Wash',
         image: sc,
         serviceType: 'Roadside Assistence',
-        degree: 'MBBS',
-        experience: '3 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 60,
-        address: {
-            line1: '27th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '9326790578',
+        services_offered: 'Car wash, Car maintenance.',
+        fees: 20,
+        state: 'Goa'
     },
     {
-        _id: 'doc15',
+        _id: 'sc15',
         name: 'Sparkles Auto nx',
         image: sc,
         serviceType: 'Repairs',
-        degree: 'MBBS',
-        experience: '1 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
-        fees: 30,
-        address: {
-            line1: '37th Cross, Richmond',
-            line2: 'Circle, Ring Road, London'
-        }
+        city: 'Panjim',
+        contact: '9326790578',
+        services_offered: 'Car wash, Car maintenance.',
+        fees: 20,
+        state: 'Goa'
     },
 ]

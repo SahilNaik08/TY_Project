@@ -4,8 +4,11 @@ import { Centers } from "../assets/assets";
 export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
+  const currencySymbol = "₹";
+
   const value = {
     Centers,
+    currencySymbol,
   };
 
   return (
