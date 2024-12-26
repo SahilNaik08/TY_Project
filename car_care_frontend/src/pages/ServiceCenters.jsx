@@ -9,6 +9,8 @@ const ServiceCenters = () => {
 
   const [servCent, setServCent] = useState([]);
 
+  const [showFilter, setShowFilter] = useState(false);
+
   const navigate = useNavigate();
 
   const applyFilter = () => {
@@ -28,7 +30,20 @@ const ServiceCenters = () => {
       <p className="text-gray-600">Browse through our Trusted partners</p>
 
       <div className="flex flex-col sm:flex-row items-start gap-5 mt-5">
-        <div className="flex flex-col gap-4 text-sm text-gray-600">
+        <button
+          onClick={() => setShowFilter((prev) => !prev)}
+          className={`py-1 px-3 border rounded text-sm  transition-all sm:hidden ${
+            showFilter ? "bg-primary text-white" : ""
+          }`}
+        >
+          Filters
+        </button>
+
+        <div
+          className={`flex-col gap-4 text-sm text-gray-600 ${
+            showFilter ? "flex" : "hidden sm:flex"
+          }`}
+        >
           <p
             onClick={() =>
               serviceType === "All Round"
