@@ -1,11 +1,13 @@
 import validator from "validator"
 import bcrypt from "bcrypt"
+import db from "../models/ServiceCenterModel.js"
+import jwt from 'jsonwebtoken'
 
 
 
 // API for adding serv_center
 
-const addServCenter = async () => {
+const addServCenter = async (req,res) => {
 
   try{
 
@@ -39,14 +41,58 @@ const addServCenter = async () => {
     //uploading image to cloudinary
     //to be completed
 
-    
+    //adding data to database
+    const scData = {
+      sc_name,
+      sc_email,
+      password:hashedPassword,
+      serviceType,
+      city,
+      state
+
+    }
+
+    const newServCenter = new db(scData);
+    await newServCenter.save();
+
+    res.json({success:true,messgae:"Service center added"});
 
 
 
   } catch (error) {
+      console.log(error)
+      res.json({success:false,message:"error.message"})
+  }
+
+}
+
+//api for admin login
+const loginAdmin = async (req,res) => {
+
+  try{
+
+    const {email,passowrd} = req.body
+
+    //use process.env.ADMIN_EMAIL later
+    const ADMIN_EMAIL = "sahilnaik2150@gmail.com";
+    const ADMIN_PASSWORD = "carcare123";
+
+    if (email === ADMIN_EMAIL && passowrd === ADMIN_PASSWORD) {
+
+      const token = jwt.sign(email+passowrd,process.env.JWT_SECRET)
+      res.json({success:true,token})
+
+    } else {
+      res.json({success:false,message:"Invalid Credentials"})
+    }
+
+  } catch (error) {
+
+    console.log(error)
+    res.json({success:false,message:"error.message"})
 
   }
 
 }
 
-export {addServCenter}
+export {addServCenter, loginAdmin}

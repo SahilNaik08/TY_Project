@@ -1,4 +1,4 @@
-import { connectDB } from '../config/database';
+import { connectDB } from '../config/database.js';
 
 const db = connectDB(); 
 
