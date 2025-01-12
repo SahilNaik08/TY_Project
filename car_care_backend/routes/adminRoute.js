@@ -6,11 +6,11 @@ import authAdmin from "../middlewares/authAdmin.js";
 
 
 
-const adminRouter = express.Router()
+const adminRouter = express.Router();
 
-adminRouter.post('/add-service-center',authAdmin,upload.single('image'),addServCenter)
+adminRouter.post('/add-service-center',authAdmin,upload.single('image'),addServCenter);
 
-adminRouter.post('/login',loginAdmin)
+adminRouter.post('/login',loginAdmin);
 
-export default adminRouter
+export default adminRouter;
 

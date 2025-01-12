@@ -13,6 +13,7 @@ const authAdmin = async (req,res,next) => {
       return res.json({success:false,message:"not authorized, login again"})
     }
 
+    //if token exists
     const token_decode = jwt.verify(atoken,process.env.JWT_SECRET)
 
     //to check if decoded token is valid

@@ -19,7 +19,6 @@ const Login = () => {
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
-    
     try {
       if (state === "Admin") {
         const { data } = await axios.post(backendUrl + "/api/admin/login", {
@@ -27,8 +26,8 @@ const Login = () => {
           password,
         });
         if (data.success) {
-          setAToken(data.token);
           localStorage.setItem("aToken", data.token);
+          setAToken(data.token);
         } else {
           toast.error(data.message);
         }

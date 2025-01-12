@@ -1,7 +1,7 @@
 import validator from "validator"
 import bcrypt from "bcrypt"
 import db from "../models/ServiceCenterModel.js"
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken"
 
 
 
@@ -71,15 +71,14 @@ const loginAdmin = async (req,res) => {
 
   try{
 
-    const {email,passowrd} = req.body
+    const {email,password} = req.body
 
-    //use process.env.ADMIN_EMAIL later
-    const ADMIN_EMAIL = "sahilnaik2150@gmail.com";
-    const ADMIN_PASSWORD = "carcare123";
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
-    if (email === ADMIN_EMAIL && passowrd === ADMIN_PASSWORD) {
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
 
-      const token = jwt.sign(email+passowrd,process.env.JWT_SECRET)
+      const token = jwt.sign(email+password,process.env.JWT_SECRET)
       res.json({success:true,token})
 
     } else {
