@@ -94,4 +94,23 @@ const loginAdmin = async (req,res) => {
 
 }
 
-export {addServCenter, loginAdmin}
+//api to get all serv centers list for admin panel.
+const allServCent = async (req,res) => {
+
+
+  try{
+
+    const servCenters = await db.find({}).select('-password');
+    //doesn't include password
+
+    res.json({success:true,servCenters})
+
+  }
+  catch (error) {
+    console.log(error)
+    res.json({success:false,message:"error.message"})
+
+  }
+}
+
+export {addServCenter, loginAdmin, allServCent}
