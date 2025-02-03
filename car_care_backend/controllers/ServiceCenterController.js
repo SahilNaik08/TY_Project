@@ -21,4 +21,19 @@ const changeAvailability = async (req,res) => {
 
 }
 
-export {changeAvailability}
+const centerList = async (req,res) => {
+
+  try {
+
+    const centers = await db.find({}).select(['-password','-scEmail']);
+
+    res.json({success:true,centers})
+
+  } catch (error) {
+
+    console.log(error)
+    res.json({success:false,message:"error.message"})
+  }
+}
+
+export {changeAvailability,centerList}

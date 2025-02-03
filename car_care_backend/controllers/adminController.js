@@ -1,6 +1,6 @@
 import validator from "validator"
 import bcrypt from "bcrypt"
-import db from "../models/ServiceCenterModel.js"
+import servCenterModelDB from "../models/ServiceCenterModel.js"
 import jwt from "jsonwebtoken"
 
 
@@ -52,7 +52,7 @@ const addServCenter = async (req,res) => {
 
     }
 
-    const newServCenter = new db(scData);
+    const newServCenter = new servCenterModelDB(scData);
     await newServCenter.save();
 
     res.json({success:true,messgae:"Service center added"});
@@ -61,7 +61,7 @@ const addServCenter = async (req,res) => {
 
   } catch (error) {
       console.log(error)
-      res.json({success:false,message:"error.message"})
+      res.json({success:false,message:error.message})
   }
 
 }

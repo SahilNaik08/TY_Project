@@ -38,9 +38,10 @@ const AddServCenter = () => {
 
       //console log form data
       formData.forEach((value, key) => {
-        console.log(`$(key) : $(value)`);
+        console.log(`${key}, ${value}`);
       });
 
+      //api call to save data in db
       const { data } = await axios.post(
         backendUrl + "/api/admin/add-service-center",
         formData,
@@ -62,7 +63,6 @@ const AddServCenter = () => {
     } catch (error) {
       toast.error(error.message);
       console.log(error);
-      
     }
   };
 

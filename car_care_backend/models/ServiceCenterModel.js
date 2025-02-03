@@ -1,6 +1,6 @@
 import { connectDB } from '../config/database.js';
 
-const db = connectDB(); 
+const servCenterModelDB = connectDB(); 
 
 // SQL query to create the 'service_center' table
 const createServiceCenterTable = `
@@ -18,7 +18,7 @@ const createServiceCenterTable = `
 `;
 
 // Create the table
-db.query(createServiceCenterTable, (err, result) => {
+servCenterModelDB.query(createServiceCenterTable, (err, result) => {
   if (err) {
     console.error('Error creating service_centers table:', err.message);
   } else {
@@ -26,4 +26,4 @@ db.query(createServiceCenterTable, (err, result) => {
   }
 });
 
-export default db; // Export the connection for use in other files
+export default servCenterModelDB; // Export the connection for use in other files
