@@ -27,6 +27,7 @@ const AddServCenter = () => {
       const formData = new FormData();
 
       //to send data to backend
+      
       formData.append("image", scImg);
       formData.append("sc_name", name);
       formData.append("sc_email", email);

@@ -1,8 +1,8 @@
-import express from 'express'
-import { centerList } from '../controllers/ServiceCenterController.js';
+const express = require('express');
+const { centerList } = require('../controllers/ServiceCenterController');
 
 const centerRouter = express.Router();
 
-centerRouter.get("/list",centerList)
+centerRouter.get("/list", centerList);
 
-export default centerRouter;
+module.exports = centerRouter;

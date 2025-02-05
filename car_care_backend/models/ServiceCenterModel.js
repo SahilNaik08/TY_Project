@@ -1,6 +1,6 @@
-import { connectDB } from '../config/database.js';
+const { connectDB } = require("../config/database.js");
 
-const servCenterModelDB = connectDB(); 
+const db = connectDB();
 
 // SQL query to create the 'service_center' table
 const createServiceCenterTable = `
@@ -18,12 +18,12 @@ const createServiceCenterTable = `
 `;
 
 // Create the table
-servCenterModelDB.query(createServiceCenterTable, (err, result) => {
+db.query(createServiceCenterTable, (err, result) => {
   if (err) {
-    console.error('Error creating service_centers table:', err.message);
+    console.error("Error creating service_centers table:", err.message);
   } else {
-    console.log('Service centers table created or already exists.');
+    console.log("Service centers table created or already exists.");
   }
 });
 
-export default servCenterModelDB; // Export the connection for use in other files
+module.exports = db; // Export the connection for use in other files

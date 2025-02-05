@@ -1,116 +1,92 @@
-import validator from "validator"
-import bcrypt from "bcrypt"
-import servCenterModelDB from "../models/ServiceCenterModel.js"
-import jwt from "jsonwebtoken"
-
-
+const validator = require("validator");
+const bcrypt = require("bcrypt");
+const db = require("../models/ServiceCenterModel.js");
+const jwt = require("jsonwebtoken");
 
 // API for adding serv_center
+const addServCenter = async (req, res) => {
+  try {
+    const { sc_name, sc_email, password, serviceType, city, state } = req.body;
 
-const addServCenter = async (req,res) => {
+    const imageFile = req.file;
 
-  try{
-
-    const {sc_name, sc_email, password, serviceType, city, state} = req.body
-
-    const imageFile = req.file 
-
-    //checking for all data to add service center (validation)
-    if (!sc_name || !sc_email || !password || !serviceType || !city || !state ) {
-
-      return res.json({success:false, messgae:"Missing details"})
-
+    // Checking for all data to add service center (validation)
+    if (!sc_name || !sc_email || !password || !serviceType || !city || !state) {
+      return res.json({ success: false, message: "Missing details" });
     }
 
-    //validating email format
+    // Validating email format
     if (!validator.isEmail(sc_email)) {
-      return res.json({success:false, messgae:"Enter a valid email!"})
+      return res.json({ success: false, message: "Enter a valid email!" });
     }
 
-    //validating strong password
+    // Validating strong password
     if (password.length < 8) {
-      return res.json({success:false, messgae:"Please enter a strong password!"})
+      return res.json({ success: false, message: "Please enter a strong password!" });
     }
 
-    //storing password in encrypted form, in the databse using the bcrypt package using salt (hash)
+    // Hashing service center password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    //hashing sc password
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt)
+    // Uploading image to cloudinary (to be completed)
 
-    //uploading image to cloudinary
-    //to be completed
-
-    //adding data to database
+    // Adding data to database using MySQL query
     const scData = {
       sc_name,
       sc_email,
-      password:hashedPassword,
+      password: hashedPassword,
       serviceType,
       city,
-      state
+      state,
+    };
 
-    }
+    // Using the db object to run an SQL query
+    const query = `INSERT INTO service_center (service_center_name, service_center_email, service_center_passwd, serviceType, service_center_city, service_center_state) VALUES (?, ?, ?, ?, ?, ?)`;
+    const values = [sc_name, sc_email, hashedPassword, serviceType, city, state];
 
-    const newServCenter = new servCenterModelDB(scData);
-    await newServCenter.save();
-
-    res.json({success:true,messgae:"Service center added"});
-
-
-
+    db.query(query, values, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.json({ success: false, message: "Failed to add service center" });
+      }
+      res.json({ success: true, message: "Service center added" });
+    });
   } catch (error) {
-      console.log(error)
-      res.json({success:false,message:error.message})
+    console.log(error);
+    res.json({ success: false, message: error.message });
   }
+};
 
-}
-
-//api for admin login
-const loginAdmin = async (req,res) => {
-
-  try{
-
-    const {email,password} = req.body
+// API for admin login
+const loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
     const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
     const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-
-      const token = jwt.sign(email+password,process.env.JWT_SECRET)
-      res.json({success:true,token})
-
+      const token = jwt.sign(email + password, process.env.JWT_SECRET);
+      res.json({ success: true, token });
     } else {
-      res.json({success:false,message:"Invalid Credentials"})
+      res.json({ success: false, message: "Invalid Credentials" });
     }
-
   } catch (error) {
-
-    console.log(error)
-    res.json({success:false,message:"error.message"})
-
+    console.log(error);
+    res.json({ success: false, message: error.message });
   }
+};
 
-}
-
-//api to get all serv centers list for admin panel.
-const allServCent = async (req,res) => {
-
-
-  try{
-
-    const servCenters = await db.find({}).select('-password');
-    //doesn't include password
-
-    res.json({success:true,servCenters})
-
+// API to get all service centers list for admin panel
+const allServCent = async (req, res) => {
+  try {
+    const servCenters = await db.find({}).select("-password"); // Doesn't include password
+    res.json({ success: true, servCenters });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
   }
-  catch (error) {
-    console.log(error)
-    res.json({success:false,message:"error.message"})
+};
 
-  }
-}
-
-export {addServCenter, loginAdmin, allServCent}
+module.exports = { addServCenter, loginAdmin, allServCent };

@@ -1,8 +1,9 @@
-import express from 'express'
-import cors from 'cors'
-import { connectDB } from './config/database.js'; 
-import adminRouter from './routes/adminRoute.js';
-import centerRouter from './routes/servCenterRoute.js';
+const express = require('express');
+const cors = require('cors');
+const { connectDB } = require('./config/database');
+const adminRouter = require('./routes/adminRoute');
+const centerRouter = require('./routes/servCenterRoute');
+
 
 
 // app config

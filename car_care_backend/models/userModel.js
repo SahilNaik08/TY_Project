@@ -1,4 +1,4 @@
-import connectDB from '../config/database'; // Import the database connection
+const connectDB = require('../config/database'); // Import the database connection
 
 const db = connectDB(); // Get the MySQL connection
 
@@ -24,4 +24,4 @@ db.query(createUserTable, (err, result) => {
   }
 });
 
-export default db; // Export the connection for use in other files
+module.exports = db; // Export the connection for use in other files
