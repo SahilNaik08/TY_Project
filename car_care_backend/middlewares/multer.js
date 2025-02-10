@@ -7,12 +7,10 @@ const { log } = require('console');
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
-    console.log(req.body); // The folder where images will be saved
   },
   filename: (req, file, cb) => {
     console.log('working');
     
-    console.log({reqBody: req.body})
     let serviceCenterName = req.body.sc_name || 'default_name';
   
     // Removing spaces and special characters from the name to avoid issues
