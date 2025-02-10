@@ -1,11 +1,11 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { assets } from "../../assets/assets";
 import { AdminContext } from "../../context/AdminContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 
 const AddServCenter = () => {
-  const [scImg, setScImg] = useState(false);
+  const [scImg, setScImg] = useState(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,18 +16,37 @@ const AddServCenter = () => {
 
   const { backendUrl, aToken } = useContext(AdminContext);
 
+  {
+    /*// Cleanup image preview URL to avoid memory leaks
+  useEffect(() => {
+    return () => {
+      if (previewImg) URL.revokeObjectURL(previewImg);
+    };
+  }, [previewImg]);
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setScImg(file);
+      setPreviewImg(URL.createObjectURL(file)); // Create preview URL
+    }
+  };
+
+  */
+  }
+
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
-    try {
-      if (!scImg) {
-        return toast.error("Image Not Selected");
-      }
+    if (!scImg) return toast.error("Please select an image!");
+    if (!name || !email || !password || !city || !state || !about)
+      return toast.error("All fields are required!");
 
+    try {
       const formData = new FormData();
 
       //to send data to backend
-      
+
       formData.append("image", scImg);
       formData.append("sc_name", name);
       formData.append("sc_email", email);
@@ -46,11 +65,16 @@ const AddServCenter = () => {
       const { data } = await axios.post(
         backendUrl + "/api/admin/add-service-center",
         formData,
-        { headers: { aToken } }
+        // { headers: { aToken } }
+        {
+          headers: { "Content-Type": "multipart/form-data", aToken },
+        }
       );
 
       if (data.success) {
         toast.success(data.message);
+
+        //reseting form fields
         setScImg(false);
         setName("");
         setEmail("");
@@ -62,8 +86,8 @@ const AddServCenter = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
-      console.log(error);
+      console.error("Error:", error);
+      toast.error("Failed to add service center. Try again later.");
     }
   };
 

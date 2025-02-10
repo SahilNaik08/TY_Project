@@ -1,14 +1,14 @@
+// controllers/adminController.js
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const db = require("../models/ServiceCenterModel.js");
 const jwt = require("jsonwebtoken");
 
-// API for adding serv_center
+// API for adding service center
 const addServCenter = async (req, res) => {
   try {
     const { sc_name, sc_email, password, serviceType, city, state } = req.body;
-
-    const imageFile = req.file;
+    const imageFile = req.file;  // image file received from multer
 
     // Checking for all data to add service center (validation)
     if (!sc_name || !sc_email || !password || !serviceType || !city || !state) {
@@ -29,9 +29,14 @@ const addServCenter = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Uploading image to cloudinary (to be completed)
+    const allowedFileTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+if (imageFile && !allowedFileTypes.includes(imageFile.mimetype)) {
+  return res.status(400).json({ success: false, message: 'Invalid image type! Only jpg, jpeg, and png are allowed.' });
+}
 
-    // Adding data to database using MySQL query
+const imageUrl = imageFile ? `/uploads/${imageFile.filename}` : '/uploads/SC1.png';
+
+    // Prepare data for insertion into the database
     const scData = {
       sc_name,
       sc_email,
@@ -39,18 +44,19 @@ const addServCenter = async (req, res) => {
       serviceType,
       city,
       state,
+      imageUrl,
     };
 
-    // Using the db object to run an SQL query
-    const query = `INSERT INTO service_center (service_center_name, service_center_email, service_center_passwd, serviceType, service_center_city, service_center_state) VALUES (?, ?, ?, ?, ?, ?)`;
-    const values = [sc_name, sc_email, hashedPassword, serviceType, city, state];
+    // Insert data into database
+    const query = `INSERT INTO service_center (service_center_name, service_center_email, service_center_passwd, serviceType, service_center_city, service_center_state, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    const values = [sc_name, sc_email, hashedPassword, serviceType, city, state, scData.imageUrl];
 
     db.query(query, values, (err, result) => {
       if (err) {
         console.log(err);
         return res.json({ success: false, message: "Failed to add service center" });
       }
-      res.json({ success: true, message: "Service center added" });
+      res.json({ success: true, message: "Service center added", imageUrl: scData.imageUrl });
     });
   } catch (error) {
     console.log(error);

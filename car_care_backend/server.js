@@ -3,6 +3,8 @@ const cors = require('cors');
 const { connectDB } = require('./config/database');
 const adminRouter = require('./routes/adminRoute');
 const centerRouter = require('./routes/servCenterRoute');
+const upload = require('./middlewares/multer'); 
+const path = require("path");
 
 
 
@@ -16,9 +18,12 @@ connectDB();
 
 // midlewares
 app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+app.use
 app.use(cors())
 
-
+// Serve static files (uploaded images)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // api endpoints
 
