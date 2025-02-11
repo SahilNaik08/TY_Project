@@ -16,25 +16,6 @@ const AddServCenter = () => {
 
   const { backendUrl, aToken } = useContext(AdminContext);
 
-  {
-    /*// Cleanup image preview URL to avoid memory leaks
-  useEffect(() => {
-    return () => {
-      if (previewImg) URL.revokeObjectURL(previewImg);
-    };
-  }, [previewImg]);
-
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setScImg(file);
-      setPreviewImg(URL.createObjectURL(file)); // Create preview URL
-    }
-  };
-
-  */
-  }
-
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 

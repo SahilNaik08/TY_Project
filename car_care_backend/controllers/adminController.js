@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 // API for adding service center
 const addServCenter = async (req, res) => {
   try {
-    const { sc_name, sc_email, password, serviceType, city, state } = req.body;
+    const { sc_name, sc_email, password, serviceType, city, state, about } = req.body;
     const imageFile = req.file;  // image file received from multer
 
     // Checking for all data to add service center (validation)
@@ -45,11 +45,12 @@ const imageUrl = imageFile ? `/uploads/${imageFile.filename}` : '/uploads/SC1.pn
       city,
       state,
       imageUrl,
+      about,
     };
 
     // Insert data into database
-    const query = `INSERT INTO service_center (service_center_name, service_center_email, service_center_passwd, serviceType, service_center_city, service_center_state, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-    const values = [sc_name, sc_email, hashedPassword, serviceType, city, state, scData.imageUrl];
+    const query = `INSERT INTO service_center (service_center_name, service_center_email, service_center_passwd, serviceType, service_center_city, service_center_state, imageUrl, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    const values = [sc_name, sc_email, hashedPassword, serviceType, city, state, scData.imageUrl, about];
 
     db.query(query, values, (err, result) => {
       if (err) {
