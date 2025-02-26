@@ -14,6 +14,8 @@ const AdminContextProvider = (props) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const getAllServCenters = async () => {
+    console.log("Fetching Service Centers...");
+
     try {
       const { data } = await axios.post(
         backendUrl + "/api/admin/all-service-centers",
@@ -23,6 +25,8 @@ const AdminContextProvider = (props) => {
 
       if (data.success) {
         setCenters(data.centers);
+        //console.log("Centers Data:", data.centers);
+        console.log("Is Array:", Array.isArray(data.centers));
         console.log(data.centers);
       } else {
         toast.error(data.message);

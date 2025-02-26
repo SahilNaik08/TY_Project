@@ -2,11 +2,12 @@ import React, { useContext, useEffect } from "react";
 import { AdminContext } from "../../context/AdminContext";
 
 const ServCentersList = () => {
-  const { centers, aToken, getAllServCenters, changeAvailability } = useContext(AdminContext);
+  const { centers, aToken, getAllServCenters, changeAvailability } =
+    useContext(AdminContext);
 
   useEffect(() => {
     if (aToken) {
-      getAllServCenters;
+      getAllServCenters();
     }
   }, [aToken]);
 
@@ -31,7 +32,11 @@ const ServCentersList = () => {
               <p className="text-[#5C5C5C] text-sm">{item.serviceType}</p>
 
               <div className="mt-2 flex items-center gap-1 text-sm">
-                <input onChange={()=>changeAvailability(item._id)} type="checkbox" checked={item.available} />
+                <input
+                  onChange={() => changeAvailability(item._id)}
+                  type="checkbox"
+                  checked={item.available}
+                />
                 <p>Available</p>
               </div>
             </div>

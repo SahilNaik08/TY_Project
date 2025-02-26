@@ -88,12 +88,21 @@ const loginAdmin = async (req, res) => {
 // API to get all service centers list for admin panel
 const allServCent = async (req, res) => {
   try {
-    const servCenters = await db.find({}).select("-password"); // Doesn't include password
-    res.json({ success: true, servCenters });
+    const query = `SELECT service_center_name, service_center_email, serviceType, service_center_city, service_center_state, imageUrl, about FROM service_center`; // Excludes password
+
+    db.query(query, (error, results) => {
+      if (error) {
+        console.error("Database Query Error:", error);
+        return res.status(500).json({ success: false, message: "Database query failed" });
+      }
+
+      res.json({ success: true, centers: results });
+    });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error("Server Error:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
 
 module.exports = { addServCenter, loginAdmin, allServCent };
