@@ -12,10 +12,10 @@ const AppContextProvider = (props) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [centers, setCenters] = useState([]);
 
-  const value = {
-    Centers,
-    currencySymbol,
-  };
+  //user auth token in state variable
+  const [token, setToken] = useState(
+    localStorage.getItem("token") ? localStorage.getItem("token") : false
+  );
 
   {
     /*
@@ -40,6 +40,14 @@ const AppContextProvider = (props) => {
 
   */
   }
+
+  const value = {
+    Centers,
+    currencySymbol,
+    token,
+    setToken,
+    backendUrl,
+  };
 
   return (
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>

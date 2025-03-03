@@ -5,6 +5,7 @@ const adminRouter = require('./routes/adminRoute');
 const centerRouter = require('./routes/servCenterRoute');
 const upload = require('./middlewares/multer'); 
 const path = require("path");
+const userRouter = require('./routes/userRoute');
 
 
 
@@ -28,9 +29,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // api endpoints
 
 app.use('/api/admin',adminRouter)
-// localhost:3000/api/admin/add-service-center
-
 app.use('/api/service-center',centerRouter)
+app.use('/api/user',userRouter)
 
 app.get('/', (req, res) => {
   res.send("Express API working fine")

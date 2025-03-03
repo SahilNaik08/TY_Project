@@ -20,3 +20,19 @@ SELECT * FROM service_center;
 DELETE FROM service_center WHERE service_center_email = "3MCAR@GMAIL.COM";
 
 ALTER TABLE service_center ADD COLUMN about TEXT;  
+
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    user_email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    city VARCHAR(100) NULL,
+    state VARCHAR(100) NULL,
+    usr_img VARCHAR(255) DEFAULT 'uploads_user_img/profile_pic.png',
+    address TEXT NULL,
+    phone VARCHAR(20) NULL,
+    dob DATE NULL,
+    gender ENUM('Male', 'Female', 'Other') NULL
+);
+
+

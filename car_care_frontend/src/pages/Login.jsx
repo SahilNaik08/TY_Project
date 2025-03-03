@@ -1,15 +1,63 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  //api intg
+  const { backendUrl, token, setToken } = useContext(AppContext);
+
+  const navigate = useNavigate();
+
   const [state, setState] = useState("Sign Up");
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [full_name, setName] = useState("");
+  const [user_email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const onSubmitHandler = (event) => {
+  const onSubmitHandler = async (event) => {
     event.preventDefault();
+
+    console.log("Form Data:", { full_name, email: user_email, password });
+
+    try {
+      if (state === "Sign Up") {
+        const { data } = await axios.post(backendUrl + "/api/user/register", {
+          full_name,
+          user_email,
+          password,
+        });
+
+        if (data.success) {
+          localStorage.setItem("token", data.token);
+          setToken(data.token);
+        } else {
+          toast.error(data.message);
+        }
+      } else {
+        const { data } = await axios.post(backendUrl + "/api/user/login", {
+          user_email,
+          password,
+        });
+
+        if (data.success) {
+          localStorage.setItem("token", data.token);
+          setToken(data.token);
+        } else {
+          toast.error(data.message);
+        }
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong.");
+    }
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate("/");
+    }
+  }, [token]);
 
   return (
     <form onSubmit={onSubmitHandler} className="min-h-[80vh] flex items-center">
@@ -26,7 +74,7 @@ const Login = () => {
             <p>Full Name</p>
             <input
               onChange={(e) => setName(e.target.value)}
-              value={name}
+              value={full_name}
               className="border border-zinc-300 rounded w-full p-2 mt-1"
               type="text"
               required
@@ -37,7 +85,7 @@ const Login = () => {
           <p>Email</p>
           <input
             onChange={(e) => setEmail(e.target.value)}
-            value={email}
+            value={user_email}
             className="border border-zinc-300 rounded w-full p-2 mt-1"
             type="email"
             required
@@ -53,7 +101,10 @@ const Login = () => {
             required
           />
         </div>
-        <button className="bg-primary text-white w-full py-2 rounded-md text-base">
+        <button
+          type="submit"
+          className="bg-primary text-white w-full py-2 rounded-md text-base"
+        >
           {state === "Sign Up" ? "Create account" : "Login"}
         </button>
         {state === "Sign Up" ? (

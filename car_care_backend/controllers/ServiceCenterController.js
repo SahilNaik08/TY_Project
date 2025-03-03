@@ -1,4 +1,5 @@
-const db = require("../models/ServiceCenterModel.js");
+const { connectDB } = require('../config/database');
+const db = connectDB();
 
 const changeAvailability = async (req, res) => {
   try {
