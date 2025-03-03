@@ -35,4 +35,10 @@ CREATE TABLE users (
     gender ENUM('Male', 'Female', 'Other') NULL
 );
 
+show tables;
+
+select * from users;
+
+ALTER TABLE service_center ADD COLUMN available BOOLEAN DEFAULT TRUE;
+
 

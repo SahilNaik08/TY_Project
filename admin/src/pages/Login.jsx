@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets.js";
-import { DoctorContext } from "../context/DoctorContext";
+import { ServCenterContext } from "../context/ServCenterContext.jsx";
 import { AdminContext } from "../context/AdminContext";
 import { toast } from "react-toastify";
 
@@ -13,7 +13,7 @@ const Login = () => {
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  const { setDToken } = useContext(DoctorContext);
+  const { setScToken } = useContext(ServCenterContext);
   const { setAToken } = useContext(AdminContext);
 
   const onSubmitHandler = async (event) => {
@@ -32,13 +32,16 @@ const Login = () => {
           toast.error(data.message);
         }
       } else {
-        const { data } = await axios.post(backendUrl + "/api/doctor/login", {
-          email,
-          password,
-        });
+        const { data } = await axios.post(
+          backendUrl + "/api/service-center/login",
+          {
+            email,
+            password,
+          }
+        );
         if (data.success) {
-          setDToken(data.token);
-          localStorage.setItem("dToken", data.token);
+          setScToken(data.token);
+          localStorage.setItem("scToken", data.token);
         } else {
           toast.error(data.message);
         }
@@ -77,9 +80,9 @@ const Login = () => {
         </button>
         {state === "Admin" ? (
           <p>
-            Doctor Login?{" "}
+            Service Center Login?{" "}
             <span
-              onClick={() => setState("Doctor")}
+              onClick={() => setState("Service Center")}
               className="text-primary underline cursor-pointer"
             >
               Click here
