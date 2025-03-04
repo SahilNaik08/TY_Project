@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { AdminContext } from "../../context/AdminContext";
-
+import test from "../../../../car_care_backend/uploads/SC1.png";
 const ServCentersList = () => {
   const { centers, aToken, getAllServCenters, changeAvailability } =
     useContext(AdminContext);
@@ -23,7 +23,8 @@ const ServCentersList = () => {
           >
             <img
               className="bg-[#EAEFFF] group-hover:bg-primary transition-all duration-500"
-              src={item.image}
+             
+              src={`http://localhost:3000${item.imageUrl}`}
               alt=""
             />
 

@@ -38,9 +38,9 @@ const changeAvailability = async (req, res) => {
 const centerList = async (req, res) => {
   try {
     const [centers] = await db.query(
-      "SELECT service_center_email, service_center_name, service_center_state, service_center_city, serviceType, imageUrl, availability FROM service_center"
+      "SELECT service_center_email, service_center_name, service_center_state, service_center_city, serviceType, imageUrl, availabile FROM service_center"
     );
-
+ console.log(centers)
     res.json({ success: true, centers });
   } catch (error) {
     console.error(error);
