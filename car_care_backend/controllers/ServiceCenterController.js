@@ -37,11 +37,11 @@ const changeAvailability = async (req, res) => {
 // Get List of Service Centers (Excluding Password)
 const centerList = async (req, res) => {
   try {
-    const [centers] = await db.query(
+    const [Centers] = await db.query(
       "SELECT service_center_email, service_center_name, service_center_state, service_center_city, serviceType, imageUrl, availabile FROM service_center"
     );
- console.log(centers)
-    res.json({ success: true, centers });
+ console.log(Centers)
+    res.json({ success: true, Centers });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: error.message });

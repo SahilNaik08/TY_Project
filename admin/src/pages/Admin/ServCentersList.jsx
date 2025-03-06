@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { AdminContext } from "../../context/AdminContext";
-import test from "../../../../car_care_backend/uploads/SC1.png";
+//import test from "../../../../car_care_backend/uploads/SC1.png";
 const ServCentersList = () => {
   const { centers, aToken, getAllServCenters, changeAvailability } =
     useContext(AdminContext);
@@ -29,14 +29,14 @@ const ServCentersList = () => {
             />
 
             <div className="p-4">
-              <p className="text-[#262626] text-lg font-medium">{item.name}</p>
+              <p className="text-[#262626] text-lg font-medium">{item.service_center_name}</p>
               <p className="text-[#5C5C5C] text-sm">{item.serviceType}</p>
 
               <div className="mt-2 flex items-center gap-1 text-sm">
                 <input
-                  onChange={() => changeAvailability(item._id)}
+                  onChange={() => changeAvailability(item.service_center_email)}
                   type="checkbox"
-                  checked={item.available}
+                  checked={item.about} //changed to about from available
                 />
                 <p>Available</p>
               </div>

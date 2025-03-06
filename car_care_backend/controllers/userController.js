@@ -106,11 +106,42 @@ const loginUser = async (req, res) => {
             res.json({ success: true, token, user_id: user.user_id });
         });
 
-    } catch (error) {
+    } catch (error) { 
         console.error("Server error:", error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
 
+//API to get user profile data
 
-module.exports = { registerUser, loginUser };
+const getProfile = async (req, res) => {
+  try {
+      const { user_id } = req.body;
+
+      if (!user_id) {
+          return res.json({ success: false, message: "User ID is required" });
+      }
+
+      // SQL query to fetch user profile (excluding password)
+      const getUserQuery = `SELECT user_id, full_name, user_email, city, state, usr_img, address, phone, dob, gender FROM users WHERE user_id = ?`;
+
+      db.query(getUserQuery, [user_id], (err, results) => {
+          if (err) {
+              console.error("Database error:", err);
+              return res.status(500).json({ success: false, message: "Database error" });
+          }
+
+          if (results.length === 0) {
+              return res.json({ success: false, message: "User not found" });
+          }
+
+          res.json({ success: true, userData: results[0] });
+      });
+
+  } catch (error) {
+      console.error("Error fetching user profile:", error);
+      res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+module.exports = { registerUser, loginUser, getProfile };

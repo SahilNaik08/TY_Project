@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { Centers } from "../assets/assets";
+//import { Centers } from "../assets/assets";
 import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -10,21 +10,19 @@ export const AppContext = createContext();
 const AppContextProvider = (props) => {
   const currencySymbol = "₹";
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const [centers, setCenters] = useState([]);
+  const [Centers, setCenters] = useState([]);
 
   //user auth token in state variable
   const [token, setToken] = useState(
     localStorage.getItem("token") ? localStorage.getItem("token") : false
   );
 
-  {
-    /*
     const getCentersData = async () => {
     try {
       const { data } = await axios.get(backendUrl + "/api/service-center/list");
 
       if (data.success) {
-        setCenters(data.centers);
+        setCenters(data.Centers);
       } else {
         toast.error(data.message);
       }
@@ -38,8 +36,7 @@ const AppContextProvider = (props) => {
     getCentersData();
   }, []);
 
-  */
-  }
+
 
   const value = {
     Centers,

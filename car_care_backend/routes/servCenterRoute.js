@@ -1,6 +1,6 @@
 const express = require('express');
 const upload = require('../middlewares/multer');
-const { centerList, loginServCenter } = require('../controllers/ServiceCenterController');
+const { centerList, loginServCenter } = require('../controllers/ServiceCenterController.js');
 const { addServCenter } = require('../controllers/adminController');
 //const { allServCent } = require('../controllers/adminController'); 
 
@@ -21,7 +21,7 @@ centerRouter.post('/upload-image', upload.single('service_center_image'), (req, 
 });
 
 // Existing route
-centerRouter.get("/service-center-list", centerList);
+centerRouter.get("/list", centerList);
 
 centerRouter.post("/add-service-center", addServCenter);
 
