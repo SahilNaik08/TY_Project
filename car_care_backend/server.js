@@ -34,7 +34,9 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/admin',adminRouter)
 app.use('/api/service-center',centerRouter)
 app.use('/api/user',userRouter)
-
+app.use('/test', (req,res)=>{
+console.log('receiving')
+})
 app.get('/', (req, res) => {
   res.send("Express API working fine")
 })

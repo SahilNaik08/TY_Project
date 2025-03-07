@@ -17,26 +17,26 @@ const AppContextProvider = (props) => {
     localStorage.getItem("token") ? localStorage.getItem("token") : false
   );
 
-    const getCentersData = async () => {
-    try {
-      const { data } = await axios.get(backendUrl + "/api/service-center/list");
-
-      if (data.success) {
-        setCenters(data.Centers);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message);
-    }
+  const getCentersData = async () => {
+     try {
+            const data  = await axios.get(backendUrl + "/api/service-center/list");
+      
+            if (data) {
+              console.log('this is the main ', data.data.results)
+              setCenters(data.data.results);
+            } else {
+              console.log('else ')
+              toast.error(data.message);
+            }
+          } catch (error) {
+            console.log(error);
+            toast.error(error.message);
+          }
   };
 
   useEffect(() => {
     getCentersData();
   }, []);
-
-
 
   const value = {
     Centers,
