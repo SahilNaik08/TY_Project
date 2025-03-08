@@ -1,25 +1,68 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
 
 const UserProfile = () => {
   const [isEdit, setIsEdit] = useState(false);
+  
 
-  const [userData, setUserData] = useState({
-    name: "Sahil Naik",
-    image: assets.profile_pic,
-    email: "sahilnaik@gmail.com",
-    phone: "+91 888 888 4909",
-    address: {
-      line1: "Taleigao",
-      line2: "Panjim, Goa",
-    },
-    gender: "Male",
-    dob: "2004-09-08",
-  });
+  // const [userData, setUserData] = useState({
+  //   name: "Sahil Naik",
+  //   image: assets.profile_pic,
+  //   email: "sahilnaik@gmail.com",
+  //   phone: "+91 888 888 4909",
+  //   address: {
+  //     line1: "Taleigao",
+  //     line2: "Panjim, Goa",
+  //   },
+  //   gender: "Male",
+  //   dob: "2004-09-08",
+  // });
+
+  const img = assets.profile_pic;
+
+  //instead getting data from state variable, from api
+
+  const { userData, setUserData, token, backendUrl, loadUserProfileData } = useContext(AppContext);
+
+  //to edit and update user profile and save in db
+
+  const updateUserProfileData = async () => {
+    try {
+        const requestData = {
+            full_name: userData.name,  // Match backend column names
+            phone: userData.phone,
+            address: userData.address,
+            gender: userData.gender,
+            dob: userData.dob
+        };
+
+        const { data } = await axios.post(
+            backendUrl + '/api/user/update-profile',
+            requestData,
+            { headers: { token, "Content-Type": "application/json" } }  // Ensure JSON format
+        );
+
+        if (data.success) {
+            toast.success(data.message);
+            await loadUserProfileData();
+            setIsEdit(false);
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        console.log(error);
+        toast.error(error.message);
+    }
+};
+
+
+  //use return userData && (....) if error
 
   return (
     <div className="max-w-lg flex flex-col gap-2 text-sm">
-      <img className="w-36 rounded" src={userData.image} alt="" />
+      <img className="w-36 rounded" src={img} alt="" />
 
       {isEdit ? (
         <input
@@ -28,11 +71,11 @@ const UserProfile = () => {
           onChange={(e) =>
             setUserData((prev) => ({ ...prev, name: e.target.value }))
           }
-          value={userData.name}
+          value={userData.full_name}
         />
       ) : (
         <p className="font-medium text-3xl text-neutral-800 mt-4">
-          {userData.name}
+          {userData.full_name}
         </p>
       )}
 
@@ -41,7 +84,7 @@ const UserProfile = () => {
         <p className="text-neutral-500 underline mt-3">CONTACT INFORMATION</p>
         <div className="grid grid-cols-[1fr_3fr] gap-y-2.5 mt-3 text-neutral-700">
           <p className="font-medium">Email id:</p>
-          <p className="text-blue-500">{userData.email}</p>
+          <p className="text-blue-500">{userData.user_email}</p>
           <p className="font-medium">Phone:</p>
           {isEdit ? (
             <input
@@ -84,7 +127,7 @@ const UserProfile = () => {
             </p>
           ) : (
             <p className="text-gray-500">
-              {userData.address.line1} <br /> {userData.address.line2}
+              {userData.address}
             </p>
           )}
         </div>
@@ -125,7 +168,7 @@ const UserProfile = () => {
       <div className="mt-10">
         {isEdit ? (
           <button
-            onClick={() => setIsEdit(false)}
+            onClick={() => {updateUserProfileData}}
             className="border border-primary px-8 py-2 rounded-full hover:bg-primary hover:text-white transition-all"
           >
             Save information

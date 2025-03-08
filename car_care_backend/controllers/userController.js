@@ -116,16 +116,16 @@ const loginUser = async (req, res) => {
 
 const getProfile = async (req, res) => {
   try {
-      const { user_id } = req.body;
+      const { userId } = req.body;
 
-      if (!user_id) {
+      if (!userId) {
           return res.json({ success: false, message: "User ID is required" });
       }
 
       // SQL query to fetch user profile (excluding password)
       const getUserQuery = `SELECT user_id, full_name, user_email, city, state, usr_img, address, phone, dob, gender FROM users WHERE user_id = ?`;
 
-      db.query(getUserQuery, [user_id], (err, results) => {
+      db.query(getUserQuery, [userId], (err, results) => {
           if (err) {
               console.error("Database error:", err);
               return res.status(500).json({ success: false, message: "Database error" });
@@ -144,4 +144,60 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getProfile };
+
+
+
+//API to update user profile
+
+const updateProfile = async (req, res) => {
+  try {
+    
+      const { userId, full_name, phone, address, dob, gender } = req.body;
+      //const imageFile = req.file;
+
+      console.log(req.body);
+      
+
+      if (!userId || !full_name || !phone || !dob || !gender) {
+          return res.json({ success: false, message: "Data Missing" });
+      }
+
+      // Update user profile in MySQL
+      const updateUserQuery = `UPDATE users SET full_name = ?, phone = ?, address = ?, dob = ?, gender = ? WHERE user_id = ?`;
+
+      db.query(updateUserQuery, [full_name, phone, address, dob, gender, userId], async (err, result) => {
+          if (err) {
+              console.error("Database error:", err);
+              return res.status(500).json({ success: false, message: "Database error" });
+          }
+
+          // If there's an image, upload to Cloudinary and update user profile
+          // if (imageFile) {
+          //     try {
+          //         const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
+          //         const imageURL = imageUpload.secure_url;
+
+          //         const updateImageQuery = `UPDATE users SET usr_img = ? WHERE user_id = ?`;
+          //         db.query(updateImageQuery, [imageURL, userId], (err, result) => {
+          //             if (err) {
+          //                 console.error("Database error:", err);
+          //                 return res.status(500).json({ success: false, message: "Failed to update profile image" });
+          //             }
+          //         });
+          //     } catch (uploadError) {
+          //         console.error("Image upload error:", uploadError);
+          //         return res.status(500).json({ success: false, message: "Image upload failed" });
+          //     }
+          // }
+
+          res.json({ success: true, message: "Profile Updated" });
+      });
+
+  } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+module.exports = { registerUser, loginUser, getProfile, updateProfile };
