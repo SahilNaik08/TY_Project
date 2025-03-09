@@ -1,12 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 import RelatedServiceCenters from "../components/RelatedServiceCenters";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const Bookings = () => {
-  const { scId } = useParams();
-  const { Centers, currencySymbol } = useContext(AppContext);
+  const { sc_id } = useParams();
+
+  console.log("scId from URL:", sc_id);
+
+  const { Centers, currencySymbol, backendUrl, token, getCentersData } =
+    useContext(AppContext);
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
   const [scInfo, setScInfo] = useState(null);
@@ -18,9 +24,21 @@ const Bookings = () => {
   const [slotTime, setSlotTime] = useState("");
 
   const fetchScInfo = async () => {
-    const scInfo = Centers.find((sc) => sc._id === scId);
+    //console.log('sc id = ', sc_id);
+    //console.log('centers : ',Centers);
+
+    //console.log("Searching for sc_id:", sc_id, "Type:", typeof sc_id);
+
+    const scInfo = Centers.find((sc) => String(sc.sc_id) === sc_id);
     setScInfo(scInfo);
+
+    // console.log("Checking service center IDs in Centers array:");
+    // Centers.forEach((sc) => console.log("Center ID:", sc.sc_id));
   };
+
+  console.log("Final scInfo state:", scInfo);
+
+  const navigate = useNavigate();
 
   const getAvailableSlots = async () => {
     setScSlot([]);
@@ -72,15 +90,55 @@ const Bookings = () => {
     }
   };
 
+  //api function
+  const bookSlot = async () => {
+    if (!token) {
+      toast.warning("Login to book appointment");
+      return navigate("/login");
+    }
+
+    const date = scSlot[slotIndex][0].datetime;
+
+    let day = date.getDate();
+    let month = date.getMonth() + 1; // +1 since jan = 0, thus after +1 jan = 1
+    let year = date.getFullYear();
+
+    const slotDate = day + "_" + month + "_" + year;
+
+    const scIdInt = parseInt(sc_id, 10); // Convert sc_id to a number
+
+    console.log("Final sc_id being sent:", scIdInt);
+
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/user/book-slot",
+        { sc_id: scIdInt, slotDate, slotTime },
+        { headers: { token } }
+      );
+      if (data.success) {
+        toast.success(data.message);
+        getDoctosData();
+        navigate("/user-bookings");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
   useEffect(() => {
     fetchScInfo();
-  }, [Centers, scId]);
+  }, [sc_id, Centers]);
 
   useEffect(() => {
     getAvailableSlots();
   }, [scInfo]);
 
   useEffect(() => {}, [scSlot]);
+
+  const fees = 1500;
 
   return (
     scInfo && (
@@ -91,7 +149,7 @@ const Bookings = () => {
           <div>
             <img
               className="bg-primary w-full sm:max-w-72 rounded-lg"
-              src={scInfo.image}
+              src={`http://localhost:3000${scInfo.imageUrl}`}
               alt=""
             />
           </div>
@@ -105,11 +163,13 @@ const Bookings = () => {
 
             <div className="flex items-center gap-2 text-sm mt-1 text-gray-600">
               <p>
-                City : {scInfo.city}, Services : {scInfo.serviceType}
+                City : {scInfo.service_center_city}, <br></br>Services :{" "}
+                {scInfo.serviceType}
               </p>
+              <br />
 
               <button className="py-0.5 px-2 border text-xs rounded-full">
-                Contact : {scInfo.contact}
+                Contact : {scInfo.service_center_email}
               </button>
             </div>
 
@@ -119,7 +179,7 @@ const Bookings = () => {
                 Services Offered <img src={assets.info_icon} alt="" />
               </p>
               <p className="text-sm text-gray-500 max-w-[700px] mt-1">
-                {scInfo.services_offered}
+                {scInfo.serviceType}
               </p>
             </div>
 
@@ -127,7 +187,7 @@ const Bookings = () => {
               Booking fee:{" "}
               <span className="text-gray-900">
                 {currencySymbol}
-                {scInfo.fees}
+                {fees}
               </span>
             </p>
           </div>
@@ -171,14 +231,17 @@ const Bookings = () => {
               ))}
           </div>
 
-          <button className="bg-primary text-white text-sm font-light px-14 py-3 rounded-full my-6">
+          <button
+            className="bg-primary text-white text-sm font-light px-14 py-3 rounded-full my-6"
+            onClick={bookSlot}
+          >
             Book this Slot
           </button>
         </div>
 
         {/*Listing related service centers */}
 
-        <RelatedServiceCenters scId={scId} serviceType={scInfo.serviceType} />
+        <RelatedServiceCenters sc_id={sc_id} serviceType={scInfo.serviceType} />
       </div>
     )
   );

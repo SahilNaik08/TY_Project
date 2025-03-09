@@ -73,7 +73,7 @@ const AppContextProvider = (props) => {
 
 
   const value = {
-    Centers,
+    Centers, getCentersData,
     currencySymbol,
     token,
     setToken,

@@ -71,7 +71,7 @@ const TopServCenters = () => {
             className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500"
             key={index}
             onClick={() => {
-              navigate(`/bookings/${item.service_center_email}`);
+              navigate(`/bookings/${item.sc_id}`);
               scrollTo(0, 0);
             }}
           >

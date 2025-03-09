@@ -88,7 +88,7 @@ const loginAdmin = async (req, res) => {
 // API to get all service centers list for admin panel
 const allServCent = async (req, res) => {
   try {
-    const query = `SELECT service_center_name, service_center_email, serviceType, service_center_city, service_center_state, imageUrl, available about FROM service_center`; // Excludes password
+    const query = `SELECT sc_id, service_center_name, service_center_email, serviceType, service_center_city, service_center_state, imageUrl, available about FROM service_center`; // Excludes password
 
     db.query(query, (error, results) => {
       if (error) {

@@ -49,7 +49,7 @@ const centerList =  (req, res) => {
 //   }
 console.error(' centerList');
 try{
-const sql =  `SELECT service_center_email, service_center_name, service_center_state, service_center_city, serviceType, imageUrl FROM service_center`
+const sql =  `SELECT sc_id, service_center_email, service_center_name, service_center_state, service_center_city, serviceType, imageUrl FROM service_center`
 
 db.query(sql, (error, results)=>{
   if(error){
@@ -77,7 +77,7 @@ const loginServCenter = async (req, res) => {
 
   //   // Fetch service center details from the database
   //   const [rows] = await db.query(
-  //     "SELECT service_center_email, service_center_passwd FROM service_center WHERE service_center_email = ?",
+  //     "SELECT sc_id, service_center_email, service_center_passwd FROM service_center WHERE service_center_email = ?",
   //     [service_center_email]
   //   );
 

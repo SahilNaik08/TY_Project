@@ -200,4 +200,128 @@ const updateProfile = async (req, res) => {
 };
 
 
-module.exports = { registerUser, loginUser, getProfile, updateProfile };
+// API to make a booking
+const bookSlot = async (req, res) => {
+  try {
+    //console.log(req.body);
+      const { sc_id, slotDate, slotTime, userId } = req.body;
+
+      // console.log(req.body);
+      // console.log('sdID : ', scId);
+      
+      // Fetch service center data
+      db.query(
+          "SELECT * FROM service_center WHERE sc_id = ?", [sc_id],
+          (err, scDataResult) => {
+              if (err) {
+                  console.error(err);
+                  return res.json({ success: false, message: 'Internal Server Error' });
+              }
+
+              if (scDataResult.length === 0) {
+                  return res.json({ success: false, message: 'Service Center Not Found' });
+              }
+
+              let scData = scDataResult[0];
+
+              if (!scData.available) {
+                  return res.json({ success: false, message: 'Service Center Not Available' });
+              }
+
+              let slots_booked = scData.slots_booked ? JSON.parse(scData.slots_booked) : {};
+
+              // Checking slot availability and updating it
+              if (slots_booked[slotDate]) {
+                  if (slots_booked[slotDate].includes(slotTime)) {
+                      return res.json({ success: false, message: 'Slot Not Available' });
+                  } else {
+                      slots_booked[slotDate].push(slotTime);
+                  }
+              } else {
+                  slots_booked[slotDate] = [slotTime];
+              }
+
+              // Fetch user data
+              db.query(
+                  "SELECT user_id, full_name, user_email FROM users WHERE user_id = ?", [userId],
+                  (err, userDataResult) => {
+                      if (err) {
+                          console.error(err);
+                          //console.log('error : ', err);
+                          
+                          return res.json({ success: false, message: 'this Server Error' });
+                      }
+
+                      if (userDataResult.length === 0) {
+                          return res.json({ success: false, message: 'User Not Found' });
+                      }
+
+                      const userData = userDataResult[0];
+
+                      // Remove slots_booked from scData before storing
+                      delete scData.slots_booked;
+
+                      // Insert new booking
+
+                      //debugging
+                      // console.log("data : ",userId,
+                      //   sc_id,
+                      //   slotDate,
+                      //   slotTime,
+                      //   JSON.stringify(userData),
+                      //   JSON.stringify(scData),
+                      //   scData.fees);
+
+//                       console.log("scData:", scData);
+// console.log("scData.fees:", scData?.fees);
+
+const fees = scData?.fees || 1500; // Default to 1500 if undefined
+
+                      
+                      db.query(
+                          "INSERT INTO bookings (user_id, sc_id, slot_date, slot_time, user_data, sc_data, amount, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                          [
+                              userId,
+                              sc_id,
+                              slotDate,
+                              slotTime,
+                              JSON.stringify(userData),
+                              JSON.stringify(scData), // Now without slots_booked
+                              fees, //default value
+                              Date.now()
+                          ],
+                          (err) => {
+                              if (err) {
+                                  console.error(err);
+                                  return res.json({ success: false, message: 'last Server Error' });
+                              }
+
+                              // Update service center's booked slots
+                              db.query(
+                                  "UPDATE service_center SET slots_booked = ? WHERE sc_id = ?",
+                                  [JSON.stringify(slots_booked), sc_id],
+                                  (err) => {
+                                      if (err) {
+                                          console.error(err);
+                                          return res.json({ success: false, message: 'Error updating slot availability' });
+                                      }
+                                      res.json({ success: true, message: 'Slot Booked' });
+                                  }
+                              );
+                          }
+                      );
+                  }
+              );
+          }
+      );
+  } catch (error) {
+      console.error(error);
+      res.json({ success: false, message: 'Last Catch Error' });
+  }
+};
+
+
+
+
+
+module.exports = { registerUser, loginUser, getProfile, updateProfile, bookSlot };

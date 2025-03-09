@@ -5,7 +5,8 @@ const db = connectDB();
 // SQL query to create the 'service_center' table
 const createServiceCenterTable = `
   CREATE TABLE IF NOT EXISTS service_center (
-    sc_email VARCHAR(25) PRIMARY KEY,
+    sc_id INT AUTO_INCREMENT PRIMARY KEY,
+    sc_email VARCHAR(255) UNIQUE NOT NULL,
     sc_name VARCHAR(25) NOT NULL,
     image VARCHAR(25) NOT NULL,
     serviceType VARCHAR(25) NOT NULL,
@@ -22,7 +23,7 @@ db.query(createServiceCenterTable, (err, result) => {
   if (err) {
     console.error("Error creating service_centers table:", err.message);
   } else {
-    console.log("Service centers table created or already exists.");
+    console.log("Service center model working");
   }
 });
 
