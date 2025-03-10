@@ -26,7 +26,7 @@ const AppContextProvider = (props) => {
             const data  = await axios.get(backendUrl + "/api/service-center/list");
       
             if (data) {
-              console.log('this is the main ', data.data.results)
+              //console.log('this is the main ', data.data.results)
               setCenters(data.data.results);
             } else {
               console.log('else ')

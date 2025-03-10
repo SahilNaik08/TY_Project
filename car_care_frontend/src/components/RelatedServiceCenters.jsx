@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 
-const RelatedServiceCenters = ({ scId, serviceType }) => {
+const RelatedServiceCenters = ({ sc_id, serviceType }) => {
   const { Centers } = useContext(AppContext);
 
   const navigate = useNavigate();
@@ -12,11 +12,11 @@ const RelatedServiceCenters = ({ scId, serviceType }) => {
   useEffect(() => {
     if (Centers.length > 0 && serviceType) {
       const scData = Centers.filter(
-        (cent) => cent.serviceType === serviceType && cent._id !== scId
+        (cent) => cent.serviceType === serviceType && cent.sc_id !== sc_id
       );
       setRelatedSc(scData);
     }
-  }, [Centers, serviceType, scId]);
+  }, [Centers, serviceType, sc_id]);
 
   return (
     <div className="flex flex-col items-center gap-4 my-16 text-gray-900 md:mx-10">
@@ -31,17 +31,17 @@ const RelatedServiceCenters = ({ scId, serviceType }) => {
             className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500"
             key={index}
             onClick={() => {
-              navigate(`/bookings/${item._id}`);
+              navigate(`/bookings/${item.sc_id}`);
               scrollTo(0, 0);
             }}
           >
-            <img className="bg-blue-50" src={item.image} alt="" />
+            <img className="bg-blue-50" src={`http://localhost:3000${item.imageUrl}`} alt="" />
             <div className="p-4">
               <div className="flex items-center gap-2 text-sm text-center text-green-500">
                 <p className="w-2 h-2 bg-green-500 rounded-full"></p>
                 <p>Available</p>
               </div>
-              <p className="text-gray-900 text-lg font-medium">{item.name}</p>
+              <p className="text-gray-900 text-lg font-medium">{item.service_center_name}</p>
               <p className="text-gray-600 text-sm">{item.serviceType}</p>
             </div>
           </div>

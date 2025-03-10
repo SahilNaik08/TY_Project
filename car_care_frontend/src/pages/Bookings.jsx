@@ -13,6 +13,7 @@ const Bookings = () => {
 
   const { Centers, currencySymbol, backendUrl, token, getCentersData } =
     useContext(AppContext);
+    
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
   const [scInfo, setScInfo] = useState(null);
@@ -24,16 +25,17 @@ const Bookings = () => {
   const [slotTime, setSlotTime] = useState("");
 
   const fetchScInfo = async () => {
-    //console.log('sc id = ', sc_id);
-    //console.log('centers : ',Centers);
+    console.log('sc id = ', sc_id);
+    console.log('centers : ',Centers);
 
-    //console.log("Searching for sc_id:", sc_id, "Type:", typeof sc_id);
+    console.log("Searching for sc_id:", sc_id, "Type:", typeof sc_id);
+  
 
     const scInfo = Centers.find((sc) => String(sc.sc_id) === sc_id);
     setScInfo(scInfo);
 
-    // console.log("Checking service center IDs in Centers array:");
-    // Centers.forEach((sc) => console.log("Center ID:", sc.sc_id));
+    console.log("Checking service center IDs in Centers array:");
+    Centers.forEach((sc) => console.log("Center ID:", sc.sc_id));
   };
 
   console.log("Final scInfo state:", scInfo);
@@ -42,6 +44,17 @@ const Bookings = () => {
 
   const getAvailableSlots = async () => {
     setScSlot([]);
+
+    if (!scInfo || !scInfo.slots_booked) {
+      console.log(
+        "scInfo or slots_booked is undefined, skipping... scInfo :",
+        scInfo
+      );
+      return;
+    }
+
+    // console.log('scInfo : ',scInfo);
+    // console.log('scInfo.slots_booked : ', scInfo.slots_booked);
 
     //getting current date
 
@@ -71,16 +84,47 @@ const Bookings = () => {
       let timeSlots = [];
 
       while (currentDate < endTime) {
-        let formattedTime = currentDate.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+        let formattedTime = currentDate
+          .toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true, // Ensures consistency
+          })
+          .replace(/^0/, ""); // Removes leading zeros if present
 
-        // Add slot to array
-        timeSlots.push({
-          datetime: new Date(currentDate),
-          time: formattedTime,
-        });
+        let day = currentDate.getDate();
+        let month = currentDate.getMonth() + 1;
+        let year = currentDate.getFullYear();
+
+        const slotDate = day + "_" + month + "_" + year;
+        const slotTime = formattedTime;
+
+        //console.log('scinfo : ',scInfo);
+
+        // console.log(
+        //   "Available dates in slots_booked:",
+        //   Object.keys(scInfo.slots_booked)
+        // );
+        console.log("Checking slotDate:", slotDate);
+
+        //if slot is booked, that slot won't be displayed
+        const isSlotAvailable =
+          scInfo.slots_booked[slotDate] &&
+          scInfo.slots_booked[slotDate].includes(slotTime)
+            ? false
+            : true;
+
+        if (isSlotAvailable) {
+          // Add slot to array
+          timeSlots.push({
+            datetime: new Date(currentDate),
+            time: formattedTime,
+          });
+        }
+
+        // console.log("Checking booked slots for date:", slotDate);
+        // console.log("Booked slots:", scInfo.slots_booked[slotDate]);
+        // console.log("Current slot being checked:", formattedTime);
 
         // Increment current time by 30 minutes
         currentDate.setMinutes(currentDate.getMinutes() + 30);
@@ -105,9 +149,11 @@ const Bookings = () => {
 
     const slotDate = day + "_" + month + "_" + year;
 
+    console.log("scId : ", sc_id);
+
     const scIdInt = parseInt(sc_id, 10); // Convert sc_id to a number
 
-    console.log("Final sc_id being sent:", scIdInt);
+    //console.log("Final sc_id being sent:", scIdInt);
 
     try {
       const { data } = await axios.post(
@@ -117,7 +163,7 @@ const Bookings = () => {
       );
       if (data.success) {
         toast.success(data.message);
-        getDoctosData();
+        getCentersData();
         navigate("/user-bookings");
       } else {
         toast.error(data.message);
@@ -133,7 +179,9 @@ const Bookings = () => {
   }, [sc_id, Centers]);
 
   useEffect(() => {
-    getAvailableSlots();
+    if (scInfo) {
+      getAvailableSlots();
+    }
   }, [scInfo]);
 
   useEffect(() => {}, [scSlot]);

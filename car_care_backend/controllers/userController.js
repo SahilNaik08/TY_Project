@@ -233,7 +233,7 @@ const bookSlot = async (req, res) => {
               // Checking slot availability and updating it
               if (slots_booked[slotDate]) {
                   if (slots_booked[slotDate].includes(slotTime)) {
-                      return res.json({ success: false, message: 'Slot Not Available' });
+                      return res.json({ success: false, message: 'Slot Not Available, Select a diff slot' });
                   } else {
                       slots_booked[slotDate].push(slotTime);
                   }
@@ -321,7 +321,136 @@ const fees = scData?.fees || 1500; // Default to 1500 if undefined
 };
 
 
+//Api to get user bookings for frontend user-booking page
+
+const listBookings = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        if (!userId) {
+            return res.json({ success: false, message: "User ID is required" });
+        }
+
+        // Fetch user bookings
+        db.query(
+            // "SELECT * FROM bookings WHERE user_id = ? ORDER BY slot_date DESC, slot_time DESC",
+            "SELECT booking_id, user_id, sc_id, slot_date, slot_time, user_data, sc_data, amount, date, cancelled, is_completed, created_at, updated_at FROM bookings WHERE user_id = ? ORDER BY slot_date DESC, slot_time DESC",
+            [userId],
+            (err, bookingsResult) => {
+                if (err) {
+                    console.error("Database error:", err);
+                    return res.status(500).json({ success: false, message: "Database error" });
+                }
+
+                //checking
+    //             console.log("Raw bookings result:", bookingsResult);  // Log the whole result
+    // if (bookingsResult.length > 0) {
+    //   console.log("First booking:", bookingsResult[0]); // Check first item in array
+    // } else {
+    //   console.log("No bookings found for user.");
+    // }
+
+                if (bookingsResult.length === 0) {
+                    return res.json({ success: true, bookings: [] }); // Return empty list if no bookings
+                }
+
+                // Parse service center & user data from JSON
+                const bookings = bookingsResult.map((booking) => ({
+                    bookingId: booking.booking_id,
+                    serviceCenterId: booking.sc_id,
+                    slotDate: booking.slot_date,
+                    slotTime: booking.slot_time,
+                    amount: booking.amount,
+                    bookingDate: booking.date,
+                    status: booking.status || "pending", // Default to "pending" if status is missing
+                    cancelled: booking.cancelled, //  Added this
+    isCompleted: booking.is_completed, //  Added this
+                    userData: typeof booking.user_data === "string" ? JSON.parse(booking.user_data) : booking.user_data,
+                    serviceCenterData: typeof booking.sc_data === "string" ? JSON.parse(booking.sc_data) : booking.sc_data,
+                  }));
+                  
+
+                res.json({ success: true, bookings });
+            }
+        );
+
+    } catch (error) {
+        console.error("Error fetching bookings:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+//API to cancel a booking
+
+const cancelBooking = async (req, res) => {
+    try {
+        const { userId, bookingId } = req.body;
+
+        if (!userId || !bookingId) {
+            return res.status(400).json({ success: false, message: "User ID and Booking ID are required" });
+        }
+
+        // Fetch booking details
+        db.query("SELECT * FROM bookings WHERE booking_id = ? AND user_id = ?", [bookingId, userId], (err, results) => {
+            if (err) {
+                console.error("Database error:", err);
+                return res.status(500).json({ success: false, message: "Database error" });
+            }
+
+            if (results.length === 0) {
+                return res.status(404).json({ success: false, message: "Booking not found or unauthorized action" });
+            }
+
+            const { sc_id, slot_date, slot_time } = results[0];
+
+            // Cancel the booking (set cancelled = 1)
+            db.query("UPDATE bookings SET cancelled = 1 WHERE booking_id = ?", [bookingId], (updateErr) => {
+                if (updateErr) {
+                    console.error("Error updating booking:", updateErr);
+                    return res.status(500).json({ success: false, message: "Failed to cancel booking" });
+                }
+
+                // Fetch service center slots
+                db.query("SELECT slots_booked FROM service_center WHERE sc_id = ?", [sc_id], (scErr, scResults) => {
+                    if (scErr) {
+                        console.error("Error fetching service center:", scErr);
+                        return res.status(500).json({ success: false, message: "Failed to update service center slots" });
+                    }
+
+                    if (scResults.length === 0) {
+                        return res.json({ success: true, message: "Booking cancelled, but service center not found" });
+                    }
+
+                    let slotsBooked = scResults[0].slots_booked ? JSON.parse(scResults[0].slots_booked) : {};
+
+                    // Remove slot from booked slots
+                    if (slotsBooked[slot_date]) {
+                        slotsBooked[slot_date] = slotsBooked[slot_date].filter(time => time !== slot_time);
+                        if (slotsBooked[slot_date].length === 0) {
+                            delete slotsBooked[slot_date]; // Remove empty date entries
+                        }
+                    }
+
+                    // Update service center slots in the database
+                    db.query("UPDATE service_center SET slots_booked = ? WHERE sc_id = ?", [JSON.stringify(slotsBooked), sc_id], (updateScErr) => {
+                        if (updateScErr) {
+                            console.error("Error updating slots:", updateScErr);
+                            return res.status(500).json({ success: false, message: "Failed to update service center slots" });
+                        }
+
+                        res.json({ success: true, message: "Booking cancelled successfully" });
+                    });
+                });
+            });
+        });
+
+    } catch (error) {
+        console.error("Error cancelling booking:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
 
 
 
-module.exports = { registerUser, loginUser, getProfile, updateProfile, bookSlot };
+
+module.exports = { registerUser, loginUser, getProfile, updateProfile, bookSlot, listBookings, cancelBooking };
