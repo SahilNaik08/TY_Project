@@ -7,8 +7,9 @@ const jwt = require("jsonwebtoken");
 // API for adding service center
 const addServCenter = async (req, res) => {
   try {
-    const { sc_name, sc_email, password, serviceType, city, state, about } = req.body;
-    const imageFile = req.file;  // image file received from multer
+    const { sc_name, sc_email, password, serviceType, city, state, about } =
+      req.body;
+    const imageFile = req.file; // image file received from multer
 
     // Checking for all data to add service center (validation)
     if (!sc_name || !sc_email || !password || !serviceType || !city || !state) {
@@ -22,19 +23,29 @@ const addServCenter = async (req, res) => {
 
     // Validating strong password
     if (password.length < 8) {
-      return res.json({ success: false, message: "Please enter a strong password!" });
+      return res.json({
+        success: false,
+        message: "Please enter a strong password!",
+      });
     }
 
     // Hashing service center password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const allowedFileTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-if (imageFile && !allowedFileTypes.includes(imageFile.mimetype)) {
-  return res.status(400).json({ success: false, message: 'Invalid image type! Only jpg, jpeg, and png are allowed.' });
-}
+    const allowedFileTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (imageFile && !allowedFileTypes.includes(imageFile.mimetype)) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Invalid image type! Only jpg, jpeg, and png are allowed.",
+        });
+    }
 
-const imageUrl = imageFile ? `/uploads/${imageFile.filename}` : '/uploads/SC1.png';
+    const imageUrl = imageFile
+      ? `/uploads/${imageFile.filename}`
+      : "/uploads/SC1.png";
 
     // Prepare data for insertion into the database
     const scData = {
@@ -50,14 +61,30 @@ const imageUrl = imageFile ? `/uploads/${imageFile.filename}` : '/uploads/SC1.pn
 
     // Insert data into database
     const query = `INSERT INTO service_center (service_center_name, service_center_email, service_center_passwd, serviceType, service_center_city, service_center_state, imageUrl, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-    const values = [sc_name, sc_email, hashedPassword, serviceType, city, state, scData.imageUrl, about];
+    const values = [
+      sc_name,
+      sc_email,
+      hashedPassword,
+      serviceType,
+      city,
+      state,
+      scData.imageUrl,
+      about,
+    ];
 
     db.query(query, values, (err, result) => {
       if (err) {
         console.log(err);
-        return res.json({ success: false, message: "Failed to add service center" });
+        return res.json({
+          success: false,
+          message: "Failed to add service center",
+        });
       }
-      res.json({ success: true, message: "Service center added", imageUrl: scData.imageUrl });
+      res.json({
+        success: true,
+        message: "Service center added",
+        imageUrl: scData.imageUrl,
+      });
     });
   } catch (error) {
     console.log(error);
@@ -93,7 +120,9 @@ const allServCent = async (req, res) => {
     db.query(query, (error, results) => {
       if (error) {
         console.error("Database Query Error:", error);
-        return res.status(500).json({ success: false, message: "Database query failed" });
+        return res
+          .status(500)
+          .json({ success: false, message: "Database query failed" });
       }
 
       res.json({ success: true, centers: results });
@@ -104,5 +133,212 @@ const allServCent = async (req, res) => {
   }
 };
 
+//API to get all bookings list
 
-module.exports = { addServCenter, loginAdmin, allServCent };
+const bookingsAdmin = async (req, res) => {
+  try {
+    db.query("SELECT * FROM bookings", (err, results) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res
+          .status(500)
+          .json({
+            success: false,
+            message: "Database query failed",
+            error: err.message,
+          });
+      }
+      if (!results.length) {
+        return res
+          .status(404)
+          .json({ success: false, message: "No bookings found" });
+      }
+      //console.log('results : ',results);
+
+      res.json({ success: true, bookings: results || [] });
+    });
+  } catch (error) {
+    console.error("Server error:", error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+  }
+};
+
+//api to cancel appt for admin panel
+
+const bookingCancel = async (req, res) => {
+  try {
+    const { bookingId } = req.body;
+
+    if (!bookingId) {
+      return res.status(400).json({
+        success: false,
+        message: "Booking ID is required",
+      });
+    }
+
+    // Fetch booking details
+    db.query(
+      "SELECT * FROM bookings WHERE booking_id = ?",
+      [bookingId],
+      (err, results) => {
+        if (err) {
+          console.error("Database error:", err);
+          return res
+            .status(500)
+            .json({ success: false, message: "Database error" });
+        }
+
+        if (results.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "Booking not found",
+          });
+        }
+
+        const { sc_id, slot_date, slot_time } = results[0];
+
+        // Cancel the booking (set cancelled = 1)
+        db.query(
+          "UPDATE bookings SET cancelled = 1 WHERE booking_id = ?",
+          [bookingId],
+          (updateErr) => {
+            if (updateErr) {
+              console.error("Error updating booking:", updateErr);
+              return res.status(500).json({
+                success: false,
+                message: "Failed to cancel booking",
+              });
+            }
+
+            // Fetch service center slots
+            db.query(
+              "SELECT slots_booked FROM service_center WHERE sc_id = ?",
+              [sc_id],
+              (scErr, scResults) => {
+                if (scErr) {
+                  console.error("Error fetching service center:", scErr);
+                  return res.status(500).json({
+                    success: false,
+                    message: "Failed to update service center slots",
+                  });
+                }
+
+                if (scResults.length === 0) {
+                  return res.json({
+                    success: true,
+                    message: "Booking cancelled, but service center not found",
+                  });
+                }
+
+                let slotsBooked = scResults[0].slots_booked
+                  ? JSON.parse(scResults[0].slots_booked)
+                  : {};
+
+                // Remove slot from booked slots
+                if (slotsBooked[slot_date]) {
+                  slotsBooked[slot_date] = slotsBooked[slot_date].filter(
+                    (time) => time !== slot_time
+                  );
+                  if (slotsBooked[slot_date].length === 0) {
+                    delete slotsBooked[slot_date]; // Remove empty date entries
+                  }
+                }
+
+                // Update service center slots in the database
+                db.query(
+                  "UPDATE service_center SET slots_booked = ? WHERE sc_id = ?",
+                  [JSON.stringify(slotsBooked), sc_id],
+                  (updateScErr) => {
+                    if (updateScErr) {
+                      console.error("Error updating slots:", updateScErr);
+                      return res.status(500).json({
+                        success: false,
+                        message: "Failed to update service center slots",
+                      });
+                    }
+
+                    res.json({
+                      success: true,
+                      message: "Booking cancelled successfully",
+                    });
+                  }
+                );
+              }
+            );
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error("Error cancelling booking:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+//api for dashboard data
+const adminDashboard = async (req, res) => {
+  try {
+    // Fetch total number of users, bookings, and service centers
+    const usersQuery = "SELECT COUNT(*) AS totalUsers FROM users";
+    const bookingsQuery = "SELECT COUNT(*) AS totalBookings FROM bookings";
+    const serviceCentersQuery = "SELECT COUNT(*) AS totalServiceCenters FROM service_center";
+    const latestBookingsQuery = "SELECT * FROM bookings ORDER BY booking_id DESC LIMIT 5";
+
+    db.query(usersQuery, (err, usersResult) => {
+      if (err) {
+        console.error("Error fetching users:", err);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
+
+      db.query(bookingsQuery, (err, bookingsResult) => {
+        if (err) {
+          console.error("Error fetching bookings:", err);
+          return res.status(500).json({ success: false, message: "Database error" });
+        }
+
+        db.query(serviceCentersQuery, (err, serviceCentersResult) => {
+          if (err) {
+            console.error("Error fetching service centers:", err);
+            return res.status(500).json({ success: false, message: "Database error" });
+          }
+
+          db.query(latestBookingsQuery, (err, latestBookingsResult) => {
+            if (err) {
+              console.error("Error fetching latest bookings:", err);
+              return res.status(500).json({ success: false, message: "Database error" });
+            }
+
+            const dashData = {
+              totalUsers: usersResult[0].totalUsers,
+              totalBookings: bookingsResult[0].totalBookings,
+              totalServiceCenters: serviceCentersResult[0].totalServiceCenters,
+              latestBookings: latestBookingsResult
+            };
+
+            res.json({ success: true, dashData });
+          });
+        });
+      });
+    });
+
+  } catch (error) {
+    console.error("Error fetching admin dashboard data:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+module.exports = {
+  addServCenter,
+  loginAdmin,
+  allServCent,
+  bookingsAdmin,
+  bookingCancel,
+  adminDashboard,
+};

@@ -7,11 +7,9 @@ const Footer = () => {
       <div className="flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] gap-14 my-10  mt-40 text-sm">
         <div>
           <img className="mb-5 w-40" src={assets.logo} alt="" />
-          <p className="w-full md:w-2/3 text-gray-600 leading-6">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book.
+          <p className="w-full md:w-2/3 text-gray-600 leading-6"> 
+          Your trusted partner for fast, reliable, and expert auto care. From routine maintenance to advanced repairs, we keep your vehicle running smoothly. 
+          <br />Drive with confidence!
           </p>
         </div>
 

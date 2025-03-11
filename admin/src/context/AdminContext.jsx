@@ -11,6 +11,10 @@ const AdminContextProvider = (props) => {
 
   const [centers, setCenters] = useState([]);
 
+  const [bookings, setBookings] = useState([]);
+
+  const [dashData, setDashData] = useState(false);
+
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const getAllServCenters = async () => {
@@ -55,6 +59,67 @@ const AdminContextProvider = (props) => {
     }
   };
 
+  //get all bookings
+  const getAllBookings = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/api/admin/bookings", {
+        headers: { aToken },
+      });
+
+      //console.log('data : ', data);
+
+      if (data.success) {
+        setBookings(data.bookings);
+        console.log(data.bookings);
+      } else {
+        toast.error(error.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+      console.log(error);
+    }
+  };
+
+  //func to cancel booking using api
+  const cancelBooking = async (bookingId) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/admin/cancel-booking",
+        { bookingId },
+        { headers: { aToken } }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        getAllBookings(); //to get updated booking list
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+      console.log(error);
+    }
+  };
+
+  //dash data from backend
+  const getDashData = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/api/admin/dashboard", {
+        headers: { aToken },
+      });
+
+      if (data.success) {
+        setDashData(data.dashData);
+        console.log(data.dashData);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
   const value = {
     aToken,
     setAToken,
@@ -62,6 +127,12 @@ const AdminContextProvider = (props) => {
     centers,
     getAllServCenters,
     changeAvailability,
+    bookings,
+    setBookings,
+    getAllBookings,
+    cancelBooking,
+    dashData,
+    getDashData,
   };
 
   return (

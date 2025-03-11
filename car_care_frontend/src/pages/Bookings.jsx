@@ -13,7 +13,7 @@ const Bookings = () => {
 
   const { Centers, currencySymbol, backendUrl, token, getCentersData } =
     useContext(AppContext);
-    
+
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
   const [scInfo, setScInfo] = useState(null);
@@ -25,11 +25,10 @@ const Bookings = () => {
   const [slotTime, setSlotTime] = useState("");
 
   const fetchScInfo = async () => {
-    console.log('sc id = ', sc_id);
-    console.log('centers : ',Centers);
+    console.log("sc id = ", sc_id);
+    console.log("centers : ", Centers);
 
     console.log("Searching for sc_id:", sc_id, "Type:", typeof sc_id);
-  
 
     const scInfo = Centers.find((sc) => String(sc.sc_id) === sc_id);
     setScInfo(scInfo);
@@ -45,13 +44,14 @@ const Bookings = () => {
   const getAvailableSlots = async () => {
     setScSlot([]);
 
-    if (!scInfo || !scInfo.slots_booked) {
-      console.log(
-        "scInfo or slots_booked is undefined, skipping... scInfo :",
-        scInfo
-      );
-      return;
-    }
+    // if (!scInfo || !scInfo.slots_booked) {
+    //   console.log(
+    //     "scInfo or slots_booked is undefined, skipping... scInfo :",
+    //     scInfo
+    //   );
+
+    //   return;
+    // }
 
     // console.log('scInfo : ',scInfo);
     // console.log('scInfo.slots_booked : ', scInfo.slots_booked);
@@ -205,7 +205,7 @@ const Bookings = () => {
           <div className="flex-1 border border-gray-400 rounded-lg p-8 py-7 bg-white mx-2 sm:mx-0 mt-[-80px] sm:mt-0">
             {/*Service Center Details */}
             <p className="flex items-center gap-2 text-2xl font-medium text-gray-900">
-              {scInfo.name}
+              {scInfo.service_center_name}
               <img className="w-3" src={assets.verified_icon} alt="" />
             </p>
 
@@ -245,7 +245,7 @@ const Bookings = () => {
         <div className="sm:ml-72 sm:pl-4 mt-4 font-medium text-gray-700">
           <p>Available Slots</p>
           <div className="flex gap-3 items-center w-full overflow-x-scroll mt-4">
-            {scSlot.length &&
+            {
               scSlot.map((item, index) => (
                 <div
                   className={`text-center py-6 min-w-16 rounded-full cursor-pointer ${
@@ -259,11 +259,17 @@ const Bookings = () => {
                   <p>{item[0] && daysOfWeek[item[0].datetime.getDay()]}</p>
                   <p>{item[0] && item[0].datetime.getDate()}</p>
                 </div>
-              ))}
+              ))
+            }
           </div>
 
-          <div className="flex items-center gap-3 w-full overflow-x-scroll mt-4">
-            {scSlot.length &&
+          
+
+          {/* <div className="flex items-center gap-3 w-full overflow-x-scroll mt-4">
+            {
+
+              
+              
               scSlot[slotIndex].map((item, index) => (
                 <p
                   onClick={() => setSlotTime(item.time)}
@@ -276,8 +282,34 @@ const Bookings = () => {
                 >
                   {item.time.toLowerCase()}
                 </p>
-              ))}
-          </div>
+              ))
+            }
+          </div> */}
+
+<div className="flex items-center gap-3 w-full overflow-x-scroll mt-4">
+  {
+    scSlot[slotIndex] && Array.isArray(scSlot[slotIndex]) ? (
+      scSlot[slotIndex].map((item, index) => (
+        <p
+          onClick={() => setSlotTime(item.time)}
+          key={index}
+          className={`text-sm font-light flex-shrink-0 px-5 py-2 rounded-full cursor-pointer ${
+            item.time === slotTime
+              ? "bg-primary text-white"
+              : "text-gray-400 border border-gray-300"
+          }`}
+        >
+          {item.time.toLowerCase()}
+        </p>
+      ))
+    ) : (
+      <p className="text-gray-500">No slots available</p>
+    )
+  }
+</div>
+
+
+
 
           <button
             className="bg-primary text-white text-sm font-light px-14 py-3 rounded-full my-6"
