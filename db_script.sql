@@ -142,6 +142,7 @@ ADD COLUMN sc_id INT AUTO_INCREMENT PRIMARY KEY;
 ALTER TABLE service_center 
 ADD CONSTRAINT unique_service_center_email UNIQUE (service_center_email);
 
+
 desc service_center;
 
 SELECT sc_id, service_center_email FROM service_center;
@@ -167,3 +168,25 @@ CREATE TABLE bookings (
 
 
 desc bookings;
+DESC service_center;
+
+ALTER TABLE service_center ADD COLUMN slots_booked TEXT DEFAULT NULL;
+
+use car_care;
+select * from bookings;
+
+
+
+select * from service_center;
+
+
+select service_center_name, slots_booked from service_center;
+
+ALTER TABLE service_center 
+MODIFY COLUMN slots_booked TEXT NOT NULL;
+
+UPDATE service_center SET slots_booked = '{"11_3_2025":["09:00 AM"]}' WHERE slots_booked IS NULL OR slots_booked = '';
+
+
+
+

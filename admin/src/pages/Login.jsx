@@ -35,13 +35,14 @@ const Login = () => {
         const { data } = await axios.post(
           backendUrl + "/api/service-center/login",
           {
-            email,
-            password,
+            service_center_email: email, service_center_passwd: password
           }
         );
         if (data.success) {
           setScToken(data.token);
           localStorage.setItem("scToken", data.token);
+          console.log(data.token);
+          
         } else {
           toast.error(data.message);
         }

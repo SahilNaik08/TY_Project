@@ -10,13 +10,19 @@ import Dashboard from "./pages/Admin/Dashboard";
 import AllBookings from "./pages/Admin/AllBookings";
 import AddServCenter from "./pages/Admin/AddServCenter";
 import ServCentersList from "./pages/Admin/ServCentersList";
+import { ServCenterContext } from "./context/ServCenterContext";
+import ScDashboard from "./pages/ServCenter/ScDashboard";
+import ScBookings from "./pages/ServCenter/ScBookings";
+import ScProfile from "./pages/ServCenter/ScProfile";
 
 const App = () => {
   const { aToken } = useContext(AdminContext);
 
+  const { scToken } = useContext(ServCenterContext)
+
   //if atoken exists show admin panel else login page
 
-  return aToken ? (
+  return aToken || scToken  ? (
     <div className="bg-[#F8F9FD]">
       <ToastContainer />
       <Navbar></Navbar>
@@ -24,11 +30,17 @@ const App = () => {
         <Sidebar></Sidebar>
 
         <Routes>
+          {/* Admin Routes */}
           <Route path="/" element={<></>} />
           <Route path="/admin-dashboard" element={<Dashboard />} />
           <Route path="/all-bookings" element={<AllBookings />} />
           <Route path="/add-service-center" element={<AddServCenter />} />
           <Route path="/service-center-list" element={<ServCentersList />} />
+
+          {/* SC Routes */}
+          <Route path="/service-center-dashboard" element={<ScDashboard />} />
+          <Route path="/service-center-bookings" element={<ScBookings />} />
+          <Route path="/service-center-profile" element={<ScProfile />} />
         </Routes>
       </div>
     </div>

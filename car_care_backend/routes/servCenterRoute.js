@@ -1,8 +1,10 @@
 const express = require('express');
 const upload = require('../middlewares/multer');
-const { centerList, loginServCenter } = require('../controllers/ServiceCenterController.js');
+const { centerList, loginServCenter, bookingsServCenter, bookingCancel, bookingComplete, serviceCenterDashboard } = require('../controllers/ServiceCenterController.js');
 const { addServCenter } = require('../controllers/adminController');
 //const { allServCent } = require('../controllers/adminController'); 
+
+const authServCenter = require("../middlewares/authServCenter.js");
 
 
 
@@ -26,6 +28,14 @@ centerRouter.get("/list", centerList);
 centerRouter.post("/add-service-center", addServCenter);
 
 centerRouter.post('/login',loginServCenter)
+
+centerRouter.get('/bookings',authServCenter, bookingsServCenter)
+
+centerRouter.post('/complete-booking',authServCenter,bookingComplete)
+
+centerRouter.post('/cancel-booking',authServCenter,bookingCancel)
+
+centerRouter.get('/dashboard',authServCenter,serviceCenterDashboard)
 
 //centerRouter.post("/list", allServCent)
 

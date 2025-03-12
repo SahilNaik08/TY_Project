@@ -61,7 +61,9 @@ console.log('error', error)
     res.json({ success: true, results});
   }
 })
-}catch{
+}catch (error){
+  console.error(error);
+  res.status(500).json({ success: false, message: error.message });
 
 }
 console.error(' centerList');
@@ -69,45 +71,289 @@ console.error(' centerList');
 
 //API for sc Login
 
-const loginServCenter = async (req, res) => {
+const loginServCenter = (req, res) => {
+  try {
+    const { service_center_email, service_center_passwd } = req.body;
 
-  // try {
+    // Fetch service center details from the database
+    const sql = `SELECT sc_id, service_center_email, service_center_passwd FROM service_center WHERE service_center_email = ?`;
 
-  //   const { service_center_email, service_center_passwd } = req.body;
+    db.query(sql, [service_center_email], async (error, results) => {
+      if (error) {
+        console.log("error", error);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
 
-  //   // Fetch service center details from the database
-  //   const [rows] = await db.query(
-  //     "SELECT sc_id, service_center_email, service_center_passwd FROM service_center WHERE service_center_email = ?",
-  //     [service_center_email]
-  //   );
+      if (results.length === 0) {
+        return res.status(401).json({ success: false, message: "Invalid credentials" });
+      }
 
-  //   if (rows.length === 0) {
-  //     return res.status(401).json({ success: false, message: "Invalid credentials" });
-  //   }
+      const serviceCenter = results[0];
 
-  //   const serviceCenter = rows[0];
+      // Compare password
+      const isMatch = await bcrypt.compare(service_center_passwd, serviceCenter.service_center_passwd);
 
-  //   // Compare password
-  //   const isMatch = await bcrypt.compare(password, serviceCenter.service_center_passwd);
+      if (!isMatch) {
+        return res.status(401).json({ success: false, message: "Invalid credentials" });
+      }
 
-  //   if (!isMatch) {
-  //     return res.status(401).json({ success: false, message: "Invalid credentials" });
-  //   }
+      // Generate JWT token
+      const token = jwt.sign(
+        { email: serviceCenter.service_center_email }, 
+        process.env.JWT_SECRET, 
+        { expiresIn: "3d" }
+      );
 
-  //   // Generate JWT token
-  //   const token = jwt.sign(
-  //     { email: serviceCenter.service_center_email }, 
-  //     process.env.JWT_SECRET, 
-  //     { expiresIn: "3h" }
-  //   );
+      res.json({ success: true, token });
+    });
 
-  //   res.json({ success: true, token });
-
-  // } catch (error) {
-  //   console.error(error);
-  //   res.status(500).json({ success: false, message: "Internal Server Error" });
-  // }
-  console.error(' loginServCenter');
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
 };
 
-module.exports = { changeAvailability, centerList, loginServCenter };
+//API to get sc bookings for sc panel
+const bookingsServCenter = (req, res) => {
+  try {
+    const { service_center_email } = req.body;
+
+    // First, get sc_id using service_center_email
+    const getScIdQuery = `SELECT sc_id FROM service_center WHERE service_center_email = ?`;
+
+    db.query(getScIdQuery, [service_center_email], (error, results) => {
+      if (error) {
+        console.log("Database error:", error);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ success: false, message: "Service center not found" });
+      }
+
+      const sc_id = results[0].sc_id;
+
+      // Now, get bookings using sc_id
+      const getBookingsQuery = `SELECT * FROM bookings WHERE sc_id = ?`;
+
+      db.query(getBookingsQuery, [sc_id], (error, bookings) => {
+        if (error) {
+          console.log("Database error:", error);
+          return res.status(500).json({ success: false, message: "Database error" });
+        }
+
+        res.json({ success: true, bookings });
+      });
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+//api to mark booking as completed for sc panel
+const bookingComplete = async (req, res) => {
+  try {
+    const { service_center_email, booking_id } = req.body;
+
+    if (!service_center_email || !booking_id) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    // Get sc_id using service_center_email
+    const getScIdQuery = `SELECT sc_id FROM service_center WHERE service_center_email = ?`;
+
+    db.query(getScIdQuery, [service_center_email], (error, results) => {
+      if (error) {
+        console.log("Database error:", error);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ success: false, message: "Service center not found" });
+      }
+
+      const sc_id = results[0].sc_id; // Get the actual sc_id
+
+      // Fetch booking details using sc_id
+      const getBookingQuery = `SELECT * FROM bookings WHERE booking_id = ?`;
+
+      db.query(getBookingQuery, [booking_id], (error, results) => {
+        if (error) {
+          console.log("Database error:", error);
+          return res.status(500).json({ success: false, message: "Database error" });
+        }
+
+        if (results.length === 0) {
+          return res.json({ success: false, message: "Booking not found" });
+        }
+
+        const bookingData = results[0];
+
+        // Check if the booking belongs to the given service center
+        if (bookingData.sc_id === sc_id) {
+          // Mark the booking as completed
+          const updateBookingQuery = `UPDATE bookings SET is_completed = 1 WHERE booking_id = ?`;
+
+          db.query(updateBookingQuery, [booking_id], (updateError) => {
+            if (updateError) {
+              console.log("Database error:", updateError);
+              return res.status(500).json({ success: false, message: "Database error" });
+            }
+
+            return res.json({ success: true, message: "Booking Completed" });
+          });
+        } else {
+          return res.json({ success: false, message: "Booking Completion Failed" });
+        }
+      });
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+//api to mark booking as cancelled and also cancel it for sc panel
+const bookingCancel = async (req, res) => {
+  try {
+    const { service_center_email, booking_id } = req.body;
+
+    if (!service_center_email || !booking_id) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    // Get sc_id using service_center_email
+    const getScIdQuery = `SELECT sc_id FROM service_center WHERE service_center_email = ?`;
+
+    db.query(getScIdQuery, [service_center_email], (error, results) => {
+      if (error) {
+        console.log("Database error:", error);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ success: false, message: "Service center not found" });
+      }
+
+      const sc_id = results[0].sc_id; // Get the actual sc_id
+
+      // Fetch booking details using sc_id
+      const getBookingQuery = `SELECT * FROM bookings WHERE booking_id = ?`;
+
+      db.query(getBookingQuery, [booking_id], (error, results) => {
+        if (error) {
+          console.log("Database error:", error);
+          return res.status(500).json({ success: false, message: "Database error" });
+        }
+
+        if (results.length === 0) {
+          return res.json({ success: false, message: "Booking not found" });
+        }
+
+        const bookingData = results[0];
+
+        // Check if the booking belongs to the given service center
+        if (bookingData.sc_id === sc_id) {
+          // Mark the booking as cancelled
+          const updateBookingQuery = `UPDATE bookings SET cancelled = 1 WHERE booking_id = ?`;
+
+          db.query(updateBookingQuery, [booking_id], (updateError) => {
+            if (updateError) {
+              console.log("Database error:", updateError);
+              return res.status(500).json({ success: false, message: "Database error" });
+            }
+
+            return res.json({ success: true, message: "Booking Cancelled" });
+          });
+        } else {
+          return res.json({ success: false, message: "Booking Cancellation Failed" });
+        }
+      });
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+//api to get dashboard data for sc panel
+const serviceCenterDashboard = async (req, res) => {
+  try {
+    const { service_center_email } = req.body;
+
+    if (!service_center_email) {
+      return res.status(400).json({ success: false, message: "Service center email is required" });
+    }
+
+    // Get service center ID using email
+    const getScIdQuery = `SELECT sc_id FROM service_center WHERE service_center_email = ?`;
+
+    db.query(getScIdQuery, [service_center_email], (err, scResult) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
+
+      if (scResult.length === 0) {
+        return res.status(404).json({ success: false, message: "Service center not found" });
+      }
+
+      const sc_id = scResult[0].sc_id;
+
+      // Queries for dashboard data
+      const totalBookingsQuery = `SELECT COUNT(*) AS totalBookings FROM bookings WHERE sc_id = ?`;
+      const totalUsersQuery = `SELECT COUNT(DISTINCT user_id) AS totalUsers FROM bookings WHERE sc_id = ?`;
+      const earningsQuery = `SELECT SUM(amount) AS totalEarnings FROM bookings WHERE sc_id = ? AND is_completed = 1`;
+      const latestBookingsQuery = `SELECT * FROM bookings WHERE sc_id = ? ORDER BY booking_id DESC LIMIT 5`;
+
+      db.query(totalBookingsQuery, [sc_id], (err, totalBookingsResult) => {
+        if (err) {
+          console.error("Error fetching total bookings:", err);
+          return res.status(500).json({ success: false, message: "Database error" });
+        }
+
+        db.query(totalUsersQuery, [sc_id], (err, totalUsersResult) => {
+          if (err) {
+            console.error("Error fetching total users:", err);
+            return res.status(500).json({ success: false, message: "Database error" });
+          }
+
+          db.query(earningsQuery, [sc_id], (err, earningsResult) => {
+            if (err) {
+              console.error("Error fetching earnings:", err);
+              return res.status(500).json({ success: false, message: "Database error" });
+            }
+
+            db.query(latestBookingsQuery, [sc_id], (err, latestBookingsResult) => {
+              if (err) {
+                console.error("Error fetching latest bookings:", err);
+                return res.status(500).json({ success: false, message: "Database error" });
+              }
+
+              const dashData = {
+                totalBookings: totalBookingsResult[0].totalBookings || 0,
+                totalUsers: totalUsersResult[0].totalUsers || 0, // Unique users count
+                totalEarnings: earningsResult[0].totalEarnings || 0,
+                latestBookings: latestBookingsResult,
+              };
+
+              res.json({ success: true, dashData });
+            });
+          });
+        });
+      });
+    });
+  } catch (error) {
+    console.error("Error fetching service center dashboard data:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+
+module.exports = { changeAvailability, centerList, loginServCenter, bookingsServCenter, bookingCancel, bookingComplete, serviceCenterDashboard };

@@ -28,7 +28,7 @@ const Navbar = () => {
           alt=""
         />
         <p className="border px-2.5 py-0.5 rounded-full border-gray-500 text-gray-600">
-          {aToken ? "Admin" : "Doctor"}
+          {aToken ? "Admin Panel" : "Service Center Panel"}
         </p>
       </div>
       <button
