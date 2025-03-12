@@ -15,6 +15,8 @@ const ServCenterContextProvider = (props) => {
 
   const [dashData, setDashData] = useState(false);
 
+  const [profileData, setProfileData] = useState(false);
+
   //get bookings using api
   const getBookings = async () => {
     try {
@@ -48,7 +50,7 @@ const ServCenterContextProvider = (props) => {
         toast.success(data.message);
         getBookings();
         // Later after creating getDashData Function
-        getDashData()
+        getDashData();
       } else {
         toast.error(data.message);
       }
@@ -71,7 +73,7 @@ const ServCenterContextProvider = (props) => {
         toast.success(data.message);
         getBookings();
         // Later after creating getDashData Function
-        getDashData()
+        getDashData();
       } else {
         toast.error(data.message);
       }
@@ -101,6 +103,25 @@ const ServCenterContextProvider = (props) => {
     }
   };
 
+  //api to get profile data
+  const getProfileData = async () => {
+    try {
+      const { data } = await axios.get(
+        backendUrl + "/api/service-center/profile",
+        { headers: { scToken } }
+      );
+
+      console.log(data.profileData);
+
+      if (data.success) {
+        setProfileData(data.profileData);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
   const value = {
     scToken,
     setScToken,
@@ -113,6 +134,9 @@ const ServCenterContextProvider = (props) => {
     dashData,
     setDashData,
     getDashData,
+    profileData,
+    setProfileData,
+    getProfileData,
   };
 
   return (

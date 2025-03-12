@@ -60,7 +60,7 @@ const AllBookings = () => {
 
             {item.cancelled ? (
               <p className="text-red-400 text-xs font-medium">Cancelled</p>
-            ) : (
+            ) : item.is_completed === 1 ? <p className="text-green-500 text-xs font-medium">Completed</p> :(
               <img
                 onClick={() => cancelBooking(item.booking_id)}
                 className="w-10 cursor-pointer"

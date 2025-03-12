@@ -47,9 +47,9 @@ const centerList =  (req, res) => {
 //     console.error(error);
 //     res.status(500).json({ success: false, message: error.message });
 //   }
-console.error(' centerList');
+//console.error(' centerList');
 try{
-const sql =  `SELECT sc_id, service_center_email, service_center_name, service_center_state, service_center_city, serviceType, imageUrl, slots_booked FROM service_center`
+const sql =  `SELECT sc_id, service_center_email, service_center_name, service_center_state, service_center_city, serviceType, imageUrl, slots_booked, available FROM service_center`
 
 db.query(sql, (error, results)=>{
   if(error){
@@ -57,7 +57,7 @@ console.log('error', error)
   }
 
   if(results){
-    console.log(results)
+    //console.log(results)
     res.json({ success: true, results});
   }
 })
@@ -66,7 +66,7 @@ console.log('error', error)
   res.status(500).json({ success: false, message: error.message });
 
 }
-console.error(' centerList');
+//console.error(' centerList');
 };
 
 //API for sc Login
@@ -354,6 +354,84 @@ const serviceCenterDashboard = async (req, res) => {
   }
 };
 
+//api to get sc profile
+const serviceCenterProfile = async (req, res) => {
+  try {
+    const { service_center_email } = req.body;
+
+    if (!service_center_email) {
+      return res.status(400).json({ success: false, message: "Service center email is required" });
+    }
+
+    // Query to get service center profile (excluding password)
+    const profileQuery = `
+      SELECT sc_id, service_center_name, service_center_email, 
+             service_center_state, service_center_city, serviceType, 
+             imageUrl, about, available, slots_booked 
+      FROM service_center 
+      WHERE service_center_email = ?
+    `;
+
+    db.query(profileQuery, [service_center_email], (err, results) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ success: false, message: "Service center not found" });
+      }
+
+      const profileData = results[0];
+
+      res.json({ success: true, profileData });
+    });
+
+  } catch (error) {
+    console.error("Error fetching service center profile:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// API to update service center profile in SC panel
+const updateServiceCenterProfile = async (req, res) => {
+  try {
+    const { service_center_email, service_center_name, service_center_state, service_center_city, available, about } = req.body; 
+
+    if (!service_center_email) {
+      return res.status(400).json({ success: false, message: "Service center email is required" });
+    }
+
+    // Query to update the required fields, including 'about'
+    const updateProfileQuery = `
+      UPDATE service_center 
+      SET service_center_name = ?, service_center_state = ?, 
+          service_center_city = ?, available = ?, about = ?
+      WHERE service_center_email = ?
+    `;
+
+    const values = [service_center_name, service_center_state, service_center_city, available, about, service_center_email];
+
+    db.query(updateProfileQuery, values, (err, results) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
+
+      if (results.affectedRows === 0) {
+        return res.status(404).json({ success: false, message: "Service center not found" });
+      }
+
+      res.json({ success: true, message: "Profile Updated" });
+    });
+
+  } catch (error) {
+    console.error("Error updating service center profile:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
 
 
-module.exports = { changeAvailability, centerList, loginServCenter, bookingsServCenter, bookingCancel, bookingComplete, serviceCenterDashboard };
+
+
+module.exports = { changeAvailability, centerList, loginServCenter, bookingsServCenter, bookingCancel, bookingComplete, serviceCenterDashboard, serviceCenterProfile, updateServiceCenterProfile };

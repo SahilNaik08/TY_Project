@@ -13,7 +13,7 @@ const Navbar = () => {
   const logout = () => {
     navigate("/");
     scToken && setScToken("");
-    scToken && localStorage.removeItem("dToken");
+    scToken && localStorage.removeItem("scToken");
     aToken && setAToken("");
     aToken && localStorage.removeItem("aToken");
   };
