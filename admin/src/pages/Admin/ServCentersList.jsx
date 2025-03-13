@@ -22,7 +22,7 @@ const ServCentersList = () => {
             key={index}
           >
             <img
-              className="bg-[#EAEFFF] group-hover:bg-primary transition-all duration-500"
+              className="bg-[#EAEFFF] group-hover:bg-primary transition-all duration-500 h-48 w-auto mx-auto object-contain"
              
               src={`http://localhost:3000${item.imageUrl}`}
               alt=""

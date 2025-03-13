@@ -202,24 +202,7 @@ const updateProfile = async (req, res) => {
             .json({ success: false, message: "Database error" });
         }
 
-        // If there's an image, upload to Cloudinary and update user profile
-        // if (imageFile) {
-        //     try {
-        //         const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
-        //         const imageURL = imageUpload.secure_url;
-
-        //         const updateImageQuery = `UPDATE users SET usr_img = ? WHERE user_id = ?`;
-        //         db.query(updateImageQuery, [imageURL, userId], (err, result) => {
-        //             if (err) {
-        //                 console.error("Database error:", err);
-        //                 return res.status(500).json({ success: false, message: "Failed to update profile image" });
-        //             }
-        //         });
-        //     } catch (uploadError) {
-        //         console.error("Image upload error:", uploadError);
-        //         return res.status(500).json({ success: false, message: "Image upload failed" });
-        //     }
-        // }
+        
 
         res.json({ success: true, message: "Profile Updated" });
       }

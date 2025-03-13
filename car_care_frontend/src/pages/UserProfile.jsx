@@ -31,6 +31,7 @@ const UserProfile = () => {
   const updateUserProfileData = async () => {
     try {
         const requestData = {
+          userId: userData.user_id,
             full_name: userData.name,  // Match backend column names
             phone: userData.phone,
             address: userData.address,
@@ -110,7 +111,7 @@ const UserProfile = () => {
                     address: { ...prev.address, line1: e.target.value },
                   }))
                 }
-                value={userData.address.line1}
+                value={userData.address || ""}
               />
               <br />
               <input

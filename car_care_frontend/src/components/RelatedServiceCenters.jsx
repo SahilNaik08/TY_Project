@@ -35,7 +35,7 @@ const RelatedServiceCenters = ({ sc_id, serviceType }) => {
               scrollTo(0, 0);
             }}
           >
-            <img className="bg-blue-50" src={`http://localhost:3000${item.imageUrl}`} alt="" />
+            <img className="bg-blue-50 w-full h-40 object-cover" src={`http://localhost:3000${item.imageUrl}`} alt="" />
             <div className="p-4">
             <div className={`flex items-center gap-2 text-sm text-center ${item.available ? 'text-green-500' : "text-gray-500"}`}>
                 <p className={`w-2 h-2 rounded-full ${item.available ? 'bg-green-500' : "bg-gray-500"}`}></p>
