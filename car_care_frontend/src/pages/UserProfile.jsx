@@ -2,10 +2,10 @@ import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const UserProfile = () => {
   const [isEdit, setIsEdit] = useState(false);
-  
 
   // const [userData, setUserData] = useState({
   //   name: "Sahil Naik",
@@ -24,40 +24,41 @@ const UserProfile = () => {
 
   //instead getting data from state variable, from api
 
-  const { userData, setUserData, token, backendUrl, loadUserProfileData } = useContext(AppContext);
+  const { userData, setUserData, token, backendUrl, loadUserProfileData } =
+    useContext(AppContext);
 
   //to edit and update user profile and save in db
 
   const updateUserProfileData = async () => {
     try {
-        const requestData = {
-          userId: userData.user_id,
-            full_name: userData.name,  // Match backend column names
-            phone: userData.phone,
-            address: userData.address,
-            gender: userData.gender,
-            dob: userData.dob
-        };
+      const requestData = {
+        userId: userData.user_id,
+        full_name: userData.full_name, // Match backend column names
+        phone: userData.phone,
+        address: userData.address,
+        gender: userData.gender,
+        dob: userData.dob,
+      };
 
-        const { data } = await axios.post(
-            backendUrl + '/api/user/update-profile',
-            requestData,
-            { headers: { token, "Content-Type": "application/json" } }  // Ensure JSON format
-        );
+      const { data } = await axios.post(
+        backendUrl + "/api/user/update-profile",
+        requestData,
+        { headers: { token, "Content-Type": "application/json" } } // Ensure JSON format
+      );
 
-        if (data.success) {
-            toast.success(data.message);
-            await loadUserProfileData();
-            setIsEdit(false);
-        } else {
-            toast.error(data.message);
-        }
+      if (data.success) {
+        toast.success(data.message);
+        await loadUserProfileData();
+        //console.log("Setting isEdit to false"); // Debugging log
+        setIsEdit(false);
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
-        console.log(error);
-        toast.error(error.message);
+      console.log(error);
+      toast.error(error.message);
     }
-};
-
+  };
 
   //use return userData && (....) if error
 
@@ -70,9 +71,9 @@ const UserProfile = () => {
           className="bg-gray-50 text-3xl font-medium max-w-60 mt-4"
           type="text"
           onChange={(e) =>
-            setUserData((prev) => ({ ...prev, name: e.target.value }))
+            setUserData((prev) => ({ ...prev, full_name: e.target.value }))
           }
-          value={userData.full_name}
+          value={userData.full_name || ""}
         />
       ) : (
         <p className="font-medium text-3xl text-neutral-800 mt-4">
@@ -120,16 +121,14 @@ const UserProfile = () => {
                 onChange={(e) =>
                   setUserData((prev) => ({
                     ...prev,
-                    address: { ...prev.address, line2: e.target.value },
+                    address: e.target.value, // Treat address as a string
                   }))
                 }
-                value={userData.address.line2}
+                value={userData.address || ""}
               />
             </p>
           ) : (
-            <p className="text-gray-500">
-              {userData.address}
-            </p>
+            <p className="text-gray-500">{userData.address.replace(/"/g, '')}</p>
           )}
         </div>
       </div>
@@ -162,14 +161,14 @@ const UserProfile = () => {
               value={userData.dob}
             />
           ) : (
-            <p className="text-gray-400">{userData.dob}</p>
+            <p className="text-gray-400">{new Date(userData.dob).toLocaleDateString("en-GB")}</p>
           )}
         </div>
       </div>
       <div className="mt-10">
         {isEdit ? (
           <button
-            onClick={() => {updateUserProfileData}}
+            onClick={updateUserProfileData}
             className="border border-primary px-8 py-2 rounded-full hover:bg-primary hover:text-white transition-all"
           >
             Save information

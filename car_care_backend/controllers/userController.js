@@ -182,18 +182,18 @@ const updateProfile = async (req, res) => {
     const { userId, full_name, phone, address, dob, gender } = req.body;
     //const imageFile = req.file;
 
-    console.log(req.body);
+    //console.log(req.body);
 
     if (!userId || !full_name || !phone || !dob || !gender) {
       return res.json({ success: false, message: "Data Missing" });
     }
 
     // Update user profile in MySQL
-    const updateUserQuery = `UPDATE users SET full_name = ?, phone = ?, address = ?, dob = ?, gender = ? WHERE user_id = ?`;
+    const updateUserQuery = "UPDATE users SET full_name = ?, phone = ?, address = ?, dob = ?, gender = ? WHERE user_id = ?";
 
     db.query(
       updateUserQuery,
-      [full_name, phone, address, dob, gender, userId],
+      [full_name, phone, JSON.stringify(address), dob, gender, userId],
       async (err, result) => {
         if (err) {
           console.error("Database error:", err);

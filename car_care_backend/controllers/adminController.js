@@ -333,6 +333,36 @@ const adminDashboard = async (req, res) => {
   }
 };
 
+// Change Availability of a Service Center
+const changeAvailability = async (req, res) => {
+  // try {
+  //    const { service_center_email } = req.body;
+ 
+  //    // Fetch the current availability status (assuming a column `available` exists)
+  //    const [scData] = await db.query(
+  //      "SELECT available FROM service_center WHERE service_center_email = ?",
+  //      [service_center_email]
+  //    );
+ 
+  //    if (!scData.length) {
+  //      return res.status(404).json({ success: false, message: "Service Center not found" });
+  //    }
+ 
+  //    // Toggle availability
+  //    const newAvailability = !scData[0].available;
+  //    await db.query(
+  //      "UPDATE service_center SET available = ? WHERE service_center_email = ?",
+  //      [newAvailability, service_center_email]
+  //    );
+ 
+  //    res.json({ success: true, message: "Availability changed" });
+  //  } catch (error) {
+  //    console.error(error);
+  //    res.status(500).json({ success: false, message: error.message });
+  //  }
+ console.error(' changeAvailability');
+ };
+ 
 
 module.exports = {
   addServCenter,
@@ -341,4 +371,5 @@ module.exports = {
   bookingsAdmin,
   bookingCancel,
   adminDashboard,
+  changeAvailability,
 };

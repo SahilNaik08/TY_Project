@@ -1,8 +1,8 @@
 const express = require("express");
-const { addServCenter, allServCent, loginAdmin, bookingsAdmin, bookingCancel, adminDashboard } = require("../controllers/adminController");
+const { addServCenter, allServCent, loginAdmin, bookingsAdmin, bookingCancel, adminDashboard, changeAvailability } = require("../controllers/adminController");
 const upload = require("../middlewares/multer");
 const authAdmin = require("../middlewares/authAdmin");
-const { changeAvailability } = require("../controllers/ServiceCenterController");
+//const { changeAvailability } = require("../controllers/ServiceCenterController");
 
 const adminRouter = express.Router();
 

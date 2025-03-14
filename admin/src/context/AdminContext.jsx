@@ -92,6 +92,7 @@ const AdminContextProvider = (props) => {
       if (data.success) {
         toast.success(data.message);
         getAllBookings(); //to get updated booking list
+        getDashData();
       } else {
         toast.error(data.message);
       }
