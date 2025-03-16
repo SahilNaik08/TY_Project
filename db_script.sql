@@ -187,6 +187,55 @@ MODIFY COLUMN slots_booked TEXT NOT NULL;
 
 UPDATE service_center SET slots_booked = '{"11_3_2025":["09:00 AM"]}' WHERE slots_booked IS NULL OR slots_booked = '';
 
+show tables;
+
+DROP TABLE IF EXISTS R_policy;
+DROP TABLE IF EXISTS R_service_history;
+DROP TABLE IF EXISTS R_bill;
+DROP TABLE IF EXISTS R_booking;
+DROP TABLE IF EXISTS R_car;
+DROP TABLE IF EXISTS R_spare_part_sold_by_vendor;
+DROP TABLE IF EXISTS R_spare_part_for_car_model;
+DROP TABLE IF EXISTS R_spare_part;
+DROP TABLE IF EXISTS R_vendor;
+DROP TABLE IF EXISTS R_car_model;
+DROP TABLE IF EXISTS R_service;
+
+CREATE TABLE service_history (
+    history_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    sc_id INT NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (sc_id) REFERENCES service_center(sc_id) ON DELETE CASCADE
+);
+
+CREATE TABLE review (
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    review_text TEXT,
+    review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id INT NOT NULL,
+    sc_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (sc_id) REFERENCES service_center(sc_id) ON DELETE CASCADE
+);
+
+CREATE TABLE booking_review (
+    booking_id INT NOT NULL,
+    review_id INT NOT NULL,
+    PRIMARY KEY (booking_id, review_id),
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE,
+    FOREIGN KEY (review_id) REFERENCES review(review_id) ON DELETE CASCADE
+);
+
+CREATE TABLE booking_history (
+    booking_id INT NOT NULL,
+    history_id INT NOT NULL,
+    PRIMARY KEY (booking_id, history_id),
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE,
+    FOREIGN KEY (history_id) REFERENCES service_history(history_id) ON DELETE CASCADE
+);
 
 
 

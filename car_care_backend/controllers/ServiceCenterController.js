@@ -1,72 +1,60 @@
-const { connectDB } = require('../config/database');
+const { connectDB } = require("../config/database");
 const db = connectDB(); // Get MySQL DB connection
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-//const db = require("../models/servCenterModel"); 
+//const db = require("../models/servCenterModel");
 
 // Change Availability of a Service Center
 const changeAvailability = async (req, res) => {
-//  try {
-//     const { service_center_email } = req.body;
+  //  try {
+  //     const { service_center_email } = req.body;
 
-//     // Fetch the current availability status (assuming a column `available` exists)
-//     const [scData] = await db.query(
-//       "SELECT available FROM service_center WHERE service_center_email = ?",
-//       [service_center_email]
-//     );
+  //     // Fetch the current availability status (assuming a column `available` exists)
+  //     const [scData] = await db.query(
+  //       "SELECT available FROM service_center WHERE service_center_email = ?",
+  //       [service_center_email]
+  //     );
 
-//     if (!scData.length) {
-//       return res.status(404).json({ success: false, message: "Service Center not found" });
-//     }
+  //     if (!scData.length) {
+  //       return res.status(404).json({ success: false, message: "Service Center not found" });
+  //     }
 
-//     // Toggle availability
-//     const newAvailability = !scData[0].available;
-//     await db.query(
-//       "UPDATE service_center SET available = ? WHERE service_center_email = ?",
-//       [newAvailability, service_center_email]
-//     );
+  //     // Toggle availability
+  //     const newAvailability = !scData[0].available;
+  //     await db.query(
+  //       "UPDATE service_center SET available = ? WHERE service_center_email = ?",
+  //       [newAvailability, service_center_email]
+  //     );
 
-//     res.json({ success: true, message: "Availability changed" });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-console.error(' changeAvailability');
+  //     res.json({ success: true, message: "Availability changed" });
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500).json({ success: false, message: error.message });
+  //   }
+  console.error(" changeAvailability");
 };
 
 // Get List of Service Centers (Excluding Password)
-const centerList =  (req, res) => {
-//   try {
-//     const [Centers] = await db.query(
-//       "SELECT service_center_email, service_center_name, service_center_state, service_center_city, serviceType, imageUrl, availabile FROM service_center"
-//     );
-//  console.log(Centers)
-//     res.json({ success: true, Centers });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-//console.error(' centerList');
-try{
-const sql =  `SELECT sc_id, service_center_email, service_center_name, service_center_state, service_center_city, serviceType, imageUrl, slots_booked, available FROM service_center`
+const centerList = (req, res) => {
+  try {
+    const sql = `SELECT sc_id, service_center_email, service_center_name, service_center_state, service_center_city, serviceType, imageUrl, slots_booked, available FROM service_center`;
 
-db.query(sql, (error, results)=>{
-  if(error){
-console.log('error', error)
+    db.query(sql, (error, results) => {
+      if (error) {
+        console.log("error", error);
+      }
+
+      if (results) {
+        //console.log(results)
+        res.json({ success: true, results });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
   }
-
-  if(results){
-    //console.log(results)
-    res.json({ success: true, results});
-  }
-})
-}catch (error){
-  console.error(error);
-  res.status(500).json({ success: false, message: error.message });
-
-}
-//console.error(' centerList');
+  //console.error(' centerList');
 };
 
 //API for sc Login
@@ -75,38 +63,59 @@ const loginServCenter = (req, res) => {
   try {
     const { service_center_email, service_center_passwd } = req.body;
 
+    // Validate email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(service_center_email)) {
+      return res.json({ success: false, message: "Invalid email format" });
+    }
+
+    // Validate password length
+    if (service_center_passwd.length < 8) {
+      return res.json({
+        success: false,
+        message: "Password must be at least 8 characters long",
+      });
+    }
+
     // Fetch service center details from the database
     const sql = `SELECT sc_id, service_center_email, service_center_passwd FROM service_center WHERE service_center_email = ?`;
 
     db.query(sql, [service_center_email], async (error, results) => {
       if (error) {
         console.log("error", error);
-        return res.status(500).json({ success: false, message: "Database error" });
+        return res
+          .status(500)
+          .json({ success: false, message: "Database error" });
       }
 
       if (results.length === 0) {
-        return res.status(401).json({ success: false, message: "Invalid credentials" });
+        return res
+          .status(401)
+          .json({ success: false, message: "Invalid credentials" });
       }
 
       const serviceCenter = results[0];
 
       // Compare password
-      const isMatch = await bcrypt.compare(service_center_passwd, serviceCenter.service_center_passwd);
+      const isMatch = await bcrypt.compare(
+        service_center_passwd,
+        serviceCenter.service_center_passwd
+      );
 
       if (!isMatch) {
-        return res.status(401).json({ success: false, message: "Invalid credentials" });
+        return res
+          .status(401)
+          .json({ success: false, message: "Invalid credentials" });
       }
 
       // Generate JWT token
       const token = jwt.sign(
-        { email: serviceCenter.service_center_email }, 
-        process.env.JWT_SECRET, 
+        { email: serviceCenter.service_center_email },
+        process.env.JWT_SECRET,
         { expiresIn: "3d" }
       );
 
       res.json({ success: true, token });
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -124,11 +133,15 @@ const bookingsServCenter = (req, res) => {
     db.query(getScIdQuery, [service_center_email], (error, results) => {
       if (error) {
         console.log("Database error:", error);
-        return res.status(500).json({ success: false, message: "Database error" });
+        return res
+          .status(500)
+          .json({ success: false, message: "Database error" });
       }
 
       if (results.length === 0) {
-        return res.status(404).json({ success: false, message: "Service center not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "Service center not found" });
       }
 
       const sc_id = results[0].sc_id;
@@ -139,13 +152,14 @@ const bookingsServCenter = (req, res) => {
       db.query(getBookingsQuery, [sc_id], (error, bookings) => {
         if (error) {
           console.log("Database error:", error);
-          return res.status(500).json({ success: false, message: "Database error" });
+          return res
+            .status(500)
+            .json({ success: false, message: "Database error" });
         }
 
         res.json({ success: true, bookings });
       });
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -158,7 +172,9 @@ const bookingComplete = async (req, res) => {
     const { service_center_email, booking_id } = req.body;
 
     if (!service_center_email || !booking_id) {
-      return res.status(400).json({ success: false, message: "Missing required fields" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
     }
 
     // Get sc_id using service_center_email
@@ -167,11 +183,15 @@ const bookingComplete = async (req, res) => {
     db.query(getScIdQuery, [service_center_email], (error, results) => {
       if (error) {
         console.log("Database error:", error);
-        return res.status(500).json({ success: false, message: "Database error" });
+        return res
+          .status(500)
+          .json({ success: false, message: "Database error" });
       }
 
       if (results.length === 0) {
-        return res.status(404).json({ success: false, message: "Service center not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "Service center not found" });
       }
 
       const sc_id = results[0].sc_id; // Get the actual sc_id
@@ -182,7 +202,9 @@ const bookingComplete = async (req, res) => {
       db.query(getBookingQuery, [booking_id], (error, results) => {
         if (error) {
           console.log("Database error:", error);
-          return res.status(500).json({ success: false, message: "Database error" });
+          return res
+            .status(500)
+            .json({ success: false, message: "Database error" });
         }
 
         if (results.length === 0) {
@@ -199,23 +221,26 @@ const bookingComplete = async (req, res) => {
           db.query(updateBookingQuery, [booking_id], (updateError) => {
             if (updateError) {
               console.log("Database error:", updateError);
-              return res.status(500).json({ success: false, message: "Database error" });
+              return res
+                .status(500)
+                .json({ success: false, message: "Database error" });
             }
 
             return res.json({ success: true, message: "Booking Completed" });
           });
         } else {
-          return res.json({ success: false, message: "Booking Completion Failed" });
+          return res.json({
+            success: false,
+            message: "Booking Completion Failed",
+          });
         }
       });
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 //api to mark booking as cancelled and also cancel it for sc panel
 const bookingCancel = async (req, res) => {
@@ -223,7 +248,9 @@ const bookingCancel = async (req, res) => {
     const { service_center_email, booking_id } = req.body;
 
     if (!service_center_email || !booking_id) {
-      return res.status(400).json({ success: false, message: "Missing required fields" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
     }
 
     // Get sc_id using service_center_email
@@ -232,11 +259,15 @@ const bookingCancel = async (req, res) => {
     db.query(getScIdQuery, [service_center_email], (error, results) => {
       if (error) {
         console.log("Database error:", error);
-        return res.status(500).json({ success: false, message: "Database error" });
+        return res
+          .status(500)
+          .json({ success: false, message: "Database error" });
       }
 
       if (results.length === 0) {
-        return res.status(404).json({ success: false, message: "Service center not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "Service center not found" });
       }
 
       const sc_id = results[0].sc_id; // Get the actual sc_id
@@ -247,7 +278,9 @@ const bookingCancel = async (req, res) => {
       db.query(getBookingQuery, [booking_id], (error, results) => {
         if (error) {
           console.log("Database error:", error);
-          return res.status(500).json({ success: false, message: "Database error" });
+          return res
+            .status(500)
+            .json({ success: false, message: "Database error" });
         }
 
         if (results.length === 0) {
@@ -264,17 +297,21 @@ const bookingCancel = async (req, res) => {
           db.query(updateBookingQuery, [booking_id], (updateError) => {
             if (updateError) {
               console.log("Database error:", updateError);
-              return res.status(500).json({ success: false, message: "Database error" });
+              return res
+                .status(500)
+                .json({ success: false, message: "Database error" });
             }
 
             return res.json({ success: true, message: "Booking Cancelled" });
           });
         } else {
-          return res.json({ success: false, message: "Booking Cancellation Failed" });
+          return res.json({
+            success: false,
+            message: "Booking Cancellation Failed",
+          });
         }
       });
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: error.message });
@@ -287,7 +324,9 @@ const serviceCenterDashboard = async (req, res) => {
     const { service_center_email } = req.body;
 
     if (!service_center_email) {
-      return res.status(400).json({ success: false, message: "Service center email is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Service center email is required" });
     }
 
     // Get service center ID using email
@@ -296,11 +335,15 @@ const serviceCenterDashboard = async (req, res) => {
     db.query(getScIdQuery, [service_center_email], (err, scResult) => {
       if (err) {
         console.error("Database error:", err);
-        return res.status(500).json({ success: false, message: "Database error" });
+        return res
+          .status(500)
+          .json({ success: false, message: "Database error" });
       }
 
       if (scResult.length === 0) {
-        return res.status(404).json({ success: false, message: "Service center not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "Service center not found" });
       }
 
       const sc_id = scResult[0].sc_id;
@@ -314,36 +357,48 @@ const serviceCenterDashboard = async (req, res) => {
       db.query(totalBookingsQuery, [sc_id], (err, totalBookingsResult) => {
         if (err) {
           console.error("Error fetching total bookings:", err);
-          return res.status(500).json({ success: false, message: "Database error" });
+          return res
+            .status(500)
+            .json({ success: false, message: "Database error" });
         }
 
         db.query(totalUsersQuery, [sc_id], (err, totalUsersResult) => {
           if (err) {
             console.error("Error fetching total users:", err);
-            return res.status(500).json({ success: false, message: "Database error" });
+            return res
+              .status(500)
+              .json({ success: false, message: "Database error" });
           }
 
           db.query(earningsQuery, [sc_id], (err, earningsResult) => {
             if (err) {
               console.error("Error fetching earnings:", err);
-              return res.status(500).json({ success: false, message: "Database error" });
+              return res
+                .status(500)
+                .json({ success: false, message: "Database error" });
             }
 
-            db.query(latestBookingsQuery, [sc_id], (err, latestBookingsResult) => {
-              if (err) {
-                console.error("Error fetching latest bookings:", err);
-                return res.status(500).json({ success: false, message: "Database error" });
+            db.query(
+              latestBookingsQuery,
+              [sc_id],
+              (err, latestBookingsResult) => {
+                if (err) {
+                  console.error("Error fetching latest bookings:", err);
+                  return res
+                    .status(500)
+                    .json({ success: false, message: "Database error" });
+                }
+
+                const dashData = {
+                  totalBookings: totalBookingsResult[0].totalBookings || 0,
+                  totalUsers: totalUsersResult[0].totalUsers || 0, // Unique users count
+                  totalEarnings: earningsResult[0].totalEarnings || 0,
+                  latestBookings: latestBookingsResult,
+                };
+
+                res.json({ success: true, dashData });
               }
-
-              const dashData = {
-                totalBookings: totalBookingsResult[0].totalBookings || 0,
-                totalUsers: totalUsersResult[0].totalUsers || 0, // Unique users count
-                totalEarnings: earningsResult[0].totalEarnings || 0,
-                latestBookings: latestBookingsResult,
-              };
-
-              res.json({ success: true, dashData });
-            });
+            );
           });
         });
       });
@@ -360,7 +415,9 @@ const serviceCenterProfile = async (req, res) => {
     const { service_center_email } = req.body;
 
     if (!service_center_email) {
-      return res.status(400).json({ success: false, message: "Service center email is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Service center email is required" });
     }
 
     // Query to get service center profile (excluding password)
@@ -375,18 +432,21 @@ const serviceCenterProfile = async (req, res) => {
     db.query(profileQuery, [service_center_email], (err, results) => {
       if (err) {
         console.error("Database error:", err);
-        return res.status(500).json({ success: false, message: "Database error" });
+        return res
+          .status(500)
+          .json({ success: false, message: "Database error" });
       }
 
       if (results.length === 0) {
-        return res.status(404).json({ success: false, message: "Service center not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "Service center not found" });
       }
 
       const profileData = results[0];
 
       res.json({ success: true, profileData });
     });
-
   } catch (error) {
     console.error("Error fetching service center profile:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -396,10 +456,19 @@ const serviceCenterProfile = async (req, res) => {
 // API to update service center profile in SC panel
 const updateServiceCenterProfile = async (req, res) => {
   try {
-    const { service_center_email, service_center_name, service_center_state, service_center_city, available, about } = req.body; 
+    const {
+      service_center_email,
+      service_center_name,
+      service_center_state,
+      service_center_city,
+      available,
+      about,
+    } = req.body;
 
     if (!service_center_email) {
-      return res.status(400).json({ success: false, message: "Service center email is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Service center email is required" });
     }
 
     // Query to update the required fields, including 'about'
@@ -410,28 +479,45 @@ const updateServiceCenterProfile = async (req, res) => {
       WHERE service_center_email = ?
     `;
 
-    const values = [service_center_name, service_center_state, service_center_city, available, about, service_center_email];
+    const values = [
+      service_center_name,
+      service_center_state,
+      service_center_city,
+      available,
+      about,
+      service_center_email,
+    ];
 
     db.query(updateProfileQuery, values, (err, results) => {
       if (err) {
         console.error("Database error:", err);
-        return res.status(500).json({ success: false, message: "Database error" });
+        return res
+          .status(500)
+          .json({ success: false, message: "Database error" });
       }
 
       if (results.affectedRows === 0) {
-        return res.status(404).json({ success: false, message: "Service center not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "Service center not found" });
       }
 
       res.json({ success: true, message: "Profile Updated" });
     });
-
   } catch (error) {
     console.error("Error updating service center profile:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
-
-
-
-module.exports = { changeAvailability, centerList, loginServCenter, bookingsServCenter, bookingCancel, bookingComplete, serviceCenterDashboard, serviceCenterProfile, updateServiceCenterProfile };
+module.exports = {
+  changeAvailability,
+  centerList,
+  loginServCenter,
+  bookingsServCenter,
+  bookingCancel,
+  bookingComplete,
+  serviceCenterDashboard,
+  serviceCenterProfile,
+  updateServiceCenterProfile,
+};

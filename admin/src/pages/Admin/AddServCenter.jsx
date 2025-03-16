@@ -16,12 +16,42 @@ const AddServCenter = () => {
 
   const { backendUrl, aToken } = useContext(AdminContext);
 
+  // Email Validation Function
+  const isValidEmail = (email) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+
+  // Alphabet-Only Validation (City & State)
+  const isAlphabetOnly = (text) => /^[a-zA-Z\s]+$/.test(text);
+
+  // Password Validation Function
+  const validatePassword = (password) => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
+  };
+
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
     if (!scImg) return toast.error("Please select an image!");
     if (!name || !email || !password || !city || !state || !about)
       return toast.error("All fields are required!");
+
+    if (!isValidEmail(email)) {
+      return toast.error("Please enter a valid email address!");
+    }
+
+    if (!validatePassword(password))
+      return toast.error(
+        "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character."
+      );
+
+    if (!isAlphabetOnly(city)) {
+      return toast.error("City name should contain only letters!");
+    }
+
+    if (!isAlphabetOnly(state)) {
+      return toast.error("State name should contain only letters!");
+    }
 
     try {
       const formData = new FormData();

@@ -94,7 +94,7 @@ const ServiceCenters = () => {
           >
             Repairs
           </p>
-          <p
+          {/* <p
             onClick={() =>
               serviceType === "Spare Parts"
                 ? navigate("/service-centers")
@@ -119,7 +119,7 @@ const ServiceCenters = () => {
             }`}
           >
             Roadside Assistence
-          </p>
+          </p> */}
         </div>
 
         <div className="w-full grid grid-cols-auto gap-4 gap-y-6">

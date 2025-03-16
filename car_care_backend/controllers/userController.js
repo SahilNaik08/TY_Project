@@ -16,22 +16,21 @@ const registerUser = async (req, res) => {
         .json({ success: false, message: "Missing Fields" });
     }
 
-    // Validating email format
-    if (!validator.isEmail(user_email)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Please enter a valid email" });
+    // Validating email format using regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(user_email)) {
+      return res.status(400).json({ success: false, message: "Please enter a valid email" });
     }
 
-    // Validating password strength
-    if (password.length < 8) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Please enter a strong password (8+ characters)",
-        });
-    }
+   // Validating strong password
+   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+   if (!passwordRegex.test(password)) {
+     return res.status(400).json({ 
+       success: false, 
+       message: "Password must be at least 8 characters long, contain uppercase, lowercase, number, and a special character"
+     });
+   }
+
 
     // Hashing the user password
     const salt = await bcrypt.genSalt(10);
@@ -102,6 +101,16 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { user_email, password } = req.body;
+
+    // Validate email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user_email)) {
+      return res.json({ success: false, message: "Invalid email format" });
+    }
+
+    // Validate password length
+    if (password.length < 8) {
+      return res.json({ success: false, message: "Password must be at least 8 characters long" });
+    }
 
     // Check if user exists
     const checkUserQuery = `SELECT user_id, password FROM users WHERE user_email = ?`;

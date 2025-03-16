@@ -40,11 +40,11 @@ const AdminContextProvider = (props) => {
     }
   };
 
-  const changeAvailability = async (scId) => {
+  const changeAvailability = async (service_center_email) => {
     try {
       const { data } = await axios.post(
         backendUrl + "/api/admin/change-availability",
-        { scId },
+        { service_center_email },
         { headers: { aToken } }
       );
 

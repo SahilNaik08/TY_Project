@@ -11,21 +11,25 @@ const addServCenter = async (req, res) => {
       req.body;
     const imageFile = req.file; // image file received from multer
 
-    // Checking for all data to add service center (validation)
+    // Checking for all required fields
     if (!sc_name || !sc_email || !password || !serviceType || !city || !state) {
       return res.json({ success: false, message: "Missing details" });
     }
 
-    // Validating email format
-    if (!validator.isEmail(sc_email)) {
+    // Email validation using regex
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(sc_email)) {
       return res.json({ success: false, message: "Enter a valid email!" });
     }
 
-    // Validating strong password
-    if (password.length < 8) {
+    // Password validation (minimum 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character)
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
       return res.json({
         success: false,
-        message: "Please enter a strong password!",
+        message:
+          "Password must be at least 8 characters long, include 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.",
       });
     }
 
@@ -33,16 +37,16 @@ const addServCenter = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // File type validation (Only jpg, jpeg, png)
     const allowedFileTypes = ["image/jpeg", "image/png", "image/jpg"];
     if (imageFile && !allowedFileTypes.includes(imageFile.mimetype)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Invalid image type! Only jpg, jpeg, and png are allowed.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid image type! Only jpg, jpeg, and png are allowed.",
+      });
     }
 
+    // Default image if none is provided
     const imageUrl = imageFile
       ? `/uploads/${imageFile.filename}`
       : "/uploads/SC1.png";
@@ -92,10 +96,21 @@ const addServCenter = async (req, res) => {
   }
 };
 
+
 // API for admin login
 const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Validate email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.json({ success: false, message: "Invalid email format" });
+    }
+
+    // Validate password length
+    if (password.length < 8) {
+      return res.json({ success: false, message: "Password must be at least 8 characters long" });
+    }
 
     const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
     const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -333,34 +348,49 @@ const adminDashboard = async (req, res) => {
   }
 };
 
+
 // Change Availability of a Service Center
 const changeAvailability = async (req, res) => {
-  // try {
-  //    const { service_center_email } = req.body;
- 
-  //    // Fetch the current availability status (assuming a column `available` exists)
-  //    const [scData] = await db.query(
-  //      "SELECT available FROM service_center WHERE service_center_email = ?",
-  //      [service_center_email]
-  //    );
- 
-  //    if (!scData.length) {
-  //      return res.status(404).json({ success: false, message: "Service Center not found" });
-  //    }
- 
-  //    // Toggle availability
-  //    const newAvailability = !scData[0].available;
-  //    await db.query(
-  //      "UPDATE service_center SET available = ? WHERE service_center_email = ?",
-  //      [newAvailability, service_center_email]
-  //    );
- 
-  //    res.json({ success: true, message: "Availability changed" });
-  //  } catch (error) {
-  //    console.error(error);
-  //    res.status(500).json({ success: false, message: error.message });
-  //  }
- console.error(' changeAvailability');
+  try {
+    const { service_center_email } = req.body;
+  
+    // Fetch the current availability status
+    db.query(
+      "SELECT available FROM service_center WHERE service_center_email = ?",
+      [service_center_email],
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ success: false, message: err.message });
+        }
+  
+        if (!result.length) {
+          return res.status(404).json({ success: false, message: "Service Center not found" });
+        }
+  
+        // Toggle availability
+        const newAvailability = !result[0].available;
+  
+        db.query(
+          "UPDATE service_center SET available = ? WHERE service_center_email = ?",
+          [newAvailability, service_center_email],
+          (updateErr) => {
+            if (updateErr) {
+              console.error(updateErr);
+              return res.status(500).json({ success: false, message: updateErr.message });
+            }
+  
+            res.json({ success: true, message: "Availability changed" });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+  
+ //console.error(' changeAvailability');
  };
  
 
