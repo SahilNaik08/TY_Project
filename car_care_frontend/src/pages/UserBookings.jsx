@@ -107,6 +107,13 @@ const UserBookings = () => {
   //   }
   // };
 
+  // // Function to check if the cancel button should be visible
+  // const canCancel = (bookingTime) => {
+  //   const bookingTimestamp = new Date(bookingTime).getTime();
+  //   const currentTimestamp = new Date().getTime();
+  //   return currentTimestamp - bookingTimestamp <= 10 * 60 * 1000; // 10 minutes
+  // };
+
   return (
     <div>
       <p className="pb-3 mt-12 font-medium text-zinc-700 border-b">My Bookings</p>
@@ -214,6 +221,14 @@ const UserBookings = () => {
                       Re-Schedule
                     </button>
                   )}
+
+{/* {item.cancelled === 0 && canCancel(item.bookingTime) && (
+                    <button
+                      onClick={() => cancelBooking(item.bookingId)}
+                      className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300"
+                    >
+                      Cancel Booking
+                    </button> */}
 
                   {item.cancelled === 0 && (
                     <button

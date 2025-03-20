@@ -11,6 +11,8 @@ const ServiceCenters = () => {
 
   const [showFilter, setShowFilter] = useState(false);
 
+  const [selectedCity, setSelectedCity] = useState("");
+
   const navigate = useNavigate();
 
   const applyFilter = () => {
@@ -120,6 +122,19 @@ const ServiceCenters = () => {
           >
             Roadside Assistence
           </p> */}
+
+          {/* City Filter */}
+          <select
+            className="w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer"
+            value={selectedCity}
+            onChange={(e) => setSelectedCity(e.target.value)}
+          >
+            <option value="">Select City</option>
+            <option value="Panjim">Panjim</option>
+            <option value="Mapusa">Mapusa</option>
+            <option value="Porvorim">Porvorim</option>
+            <option value="Margao">Margao</option>
+          </select>
         </div>
 
         <div className="w-full grid grid-cols-auto gap-4 gap-y-6">
