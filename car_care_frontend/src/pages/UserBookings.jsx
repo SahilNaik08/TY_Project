@@ -68,18 +68,63 @@ const UserBookings = () => {
     }
   };
 
-  // Handle review submission (Mock for now)
-  const handleReviewSubmit = (bookingId) => {
+
+  //new integrated review handling
+  const handleReviewSubmit = async (bookingId, sc_id) => {
     if (!reviews[bookingId] || !ratings[bookingId]) {
       toast.error("Please enter a review and select a rating");
       return;
     }
+  
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/user/submit-review`,
+        {
+          bookingId,
+          sc_id,
+          rating: ratings[bookingId],
+          review_text: reviews[bookingId],
+        },
+        { headers: { token } }
+      );
 
-    // Mock submission
-    toast.success("Review Submitted!");
-    setShowReviewBox((prev) => ({ ...prev, [bookingId]: false }));
-    setReviewSubmitted((prev) => ({ ...prev, [bookingId]: true }));
+      //console.log("Server response:", data); // Log the entire response
+  
+      if (data.success) {
+        toast.success("Review submitted successfully!");
+        setShowReviewBox((prev) => ({ ...prev, [bookingId]: false }));
+        setReviewSubmitted((prev) => ({ ...prev, [bookingId]: true }));
+      } else {
+        toast.error("Failed to submit review");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error submitting review");
+    }
   };
+  
+
+
+
+  //hard coded review handling
+  // // Handle review submission (Mock for now)
+  // const handleReviewSubmit = (bookingId) => {
+  //   if (!reviews[bookingId] || !ratings[bookingId]) {
+  //     toast.error("Please enter a review and select a rating");
+  //     return;
+  //   }
+
+  //   // Mock submission
+  //   toast.success("Review Submitted!");
+  //   setShowReviewBox((prev) => ({ ...prev, [bookingId]: false }));
+  //   setReviewSubmitted((prev) => ({ ...prev, [bookingId]: true }));
+  // };
+
+
+
+
+
+
 
   // Handle review submission
   // const submitReview = async (bookingId) => {
@@ -190,7 +235,7 @@ const UserBookings = () => {
                         </div>
 
                         <button
-                          onClick={() => handleReviewSubmit(item.bookingId)}
+                          onClick={() => handleReviewSubmit(item.bookingId, item.serviceCenterData.sc_id)}
                           className={`mt-2 w-full py-2 rounded ${
                             reviews[item.bookingId] && ratings[item.bookingId]
                               ? "bg-blue-500 text-white"

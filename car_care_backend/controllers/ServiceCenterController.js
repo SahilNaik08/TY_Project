@@ -390,6 +390,7 @@ const serviceCenterDashboard = async (req, res) => {
                 }
 
                 const dashData = {
+                  sc_id,
                   totalBookings: totalBookingsResult[0].totalBookings || 0,
                   totalUsers: totalUsersResult[0].totalUsers || 0, // Unique users count
                   totalEarnings: earningsResult[0].totalEarnings || 0,
@@ -510,6 +511,57 @@ const updateServiceCenterProfile = async (req, res) => {
   }
 };
 
+// API to fetch reviews
+const fetchReviews = async (req, res) => {
+  try {
+    const { sc_id } = req.params; // Extract sc_id from URL params
+
+    console.log("rev");
+    
+
+    // Validate sc_id
+    if (!sc_id) {
+      return res.status(400).json({ success: false, message: "Service center ID is required" });
+    }
+
+    // Check if the service center exists
+    db.query("SELECT sc_id FROM service_center WHERE sc_id = ?", [sc_id], (err, scResult) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ success: false, message: "Internal Server Error" });
+      }
+
+      if (scResult.length === 0) {
+        return res.status(404).json({ success: false, message: "Service Center not found" });
+      }
+
+      // Fetch reviews linked to this service center
+      db.query(
+        `SELECT review_id AS id, rating, review_text AS comment
+         FROM review
+         WHERE sc_id = ? 
+         ORDER BY review_id DESC`,
+        [sc_id],
+        (err, reviewResults) => {
+          if (err) {
+            console.error("Error fetching reviews:", err);
+            return res.status(500).json({ success: false, message: "Error fetching reviews" });
+          }
+
+          //console.log("Review results:", reviewResults);
+          
+
+          res.json({ success: true, reviews: reviewResults });
+        }
+      );
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    res.status(500).json({ success: false, message: "Unexpected error occurred" });
+  }
+};
+
+
 module.exports = {
   changeAvailability,
   centerList,
@@ -520,4 +572,5 @@ module.exports = {
   serviceCenterDashboard,
   serviceCenterProfile,
   updateServiceCenterProfile,
+  fetchReviews,
 };

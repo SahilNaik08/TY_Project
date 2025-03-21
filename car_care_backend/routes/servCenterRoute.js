@@ -8,7 +8,7 @@ const {
   bookingComplete,
   serviceCenterDashboard,
   serviceCenterProfile,
-  updateServiceCenterProfile,
+  updateServiceCenterProfile, fetchReviews,
 } = require("../controllers/ServiceCenterController.js");
 const { addServCenter } = require("../controllers/adminController");
 //const { allServCent } = require('../controllers/adminController');
@@ -56,5 +56,7 @@ centerRouter.post(
 );
 
 //centerRouter.post("/list", allServCent)
+
+centerRouter.get("/reviews/:sc_id", authServCenter, fetchReviews);
 
 module.exports = centerRouter;

@@ -354,7 +354,7 @@ const Bookings = () => {
 
               {/* Right Side - Reviews */}
               <div className="flex-1">
-                <Reviews />
+                <Reviews sc_id={sc_id}/>
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { ServCenterContext } from '../../context/ServCenterContext'
 import { assets } from '../../assets/assets'
 import { AppContext } from '../../context/AppContext'
+import ServiceCenterReviews from '../../components/ServiceCenterReviews'
 
 
 const ScDashboard = () => {
@@ -72,6 +73,9 @@ const ScDashboard = () => {
           ))}
         </div>
       </div>
+
+      {/* <ServiceCenterReviews sc_id={dashData.sc_id} /> */}
+
 
     </div>
 

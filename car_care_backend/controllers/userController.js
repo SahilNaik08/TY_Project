@@ -544,6 +544,119 @@ const cancelBooking = async (req, res) => {
   }
 };
 
+
+// API to submit a review
+const submitReview = async (req, res) => {
+
+  //console.log("Review Data Received: ", req.body);
+
+  try {
+    const { userId, sc_id, rating, review_text, bookingId } = req.body;
+
+    // Validate rating
+    if (rating < 1 || rating > 5) {
+      return res.json({ success: false, message: "Rating must be between 1 and 5" });
+    }
+
+    // Check if user exists
+    db.query("SELECT * FROM users WHERE user_id = ?", [userId], (err, userResult) => {
+      if (err) {
+        console.error(err);
+        return res.json({ success: false, message: "Internal Server Error" });
+      }
+
+      if (userResult.length === 0) {
+        return res.json({ success: false, message: "User not found" });
+      }
+
+      // Check if service center exists
+      db.query("SELECT * FROM service_center WHERE sc_id = ?", [sc_id], (err, scResult) => {
+        if (err) {
+          console.error(err);
+          return res.json({ success: false, message: "Internal Server Error" });
+        }
+
+        if (scResult.length === 0) {
+          return res.json({ success: false, message: "Service Center not found" });
+        }
+
+        // Insert review into 'review' table
+        db.query(
+          "INSERT INTO review (rating, review_text, user_id, sc_id) VALUES (?, ?, ?, ?)",
+          [rating, review_text, userId, sc_id],
+          (err, reviewResult) => {
+            if (err) {
+              console.error(err);
+              return res.json({ success: false, message: "Error storing review" });
+            }
+
+            const review_id = reviewResult.insertId;
+
+            // Link review with booking in 'booking_review' table
+            db.query(
+              "INSERT INTO booking_review (booking_id, review_id) VALUES (?, ?)",
+              [bookingId, review_id],
+              (err) => {
+                if (err) {
+                  console.error(err);
+                  return res.json({ success: false, message: "Error linking review with booking" });
+                }
+
+                res.json({ success: true, message: "Review submitted successfully" });
+              }
+            );
+          }
+        );
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: "Unexpected error occurred" });
+  }
+};
+
+//API to fetch reviews
+const fetchReviews = async (req, res) => {
+  try {
+    const { sc_id } = req.params; // Extract sc_id from URL params
+
+    // Check if the service center exists
+    db.query("SELECT * FROM service_center WHERE sc_id = ?", [sc_id], (err, scResult) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ success: false, message: "Internal Server Error" });
+      }
+
+      if (scResult.length === 0) {
+        return res.status(404).json({ success: false, message: "Service Center not found" });
+      }
+
+      // Fetch reviews linked to this service center
+      db.query(
+        `SELECT r.review_id AS id, r.rating, r.review_text AS comment, 
+                r.user_id, u.full_name AS name
+         FROM review r
+         JOIN users u ON r.user_id = u.user_id
+         WHERE r.sc_id = ? 
+         ORDER BY r.review_id DESC`,
+        [sc_id],
+        (err, reviewResults) => {
+          if (err) {
+            console.error(err);
+            return res.status(500).json({ success: false, message: "Error fetching reviews" });
+          }
+
+          res.json({ success: true, reviews: reviewResults });
+        }
+      );
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Unexpected error occurred" });
+  }
+};
+
+
 module.exports = {
   registerUser,
   loginUser,
@@ -552,4 +665,6 @@ module.exports = {
   bookSlot,
   listBookings,
   cancelBooking,
+  submitReview,
+  fetchReviews,
 };
