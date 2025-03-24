@@ -66,7 +66,7 @@ const TopServCenters = () => {
       <div className="w-full">
         {Centers && (
        <div className="grid grid-cols-4 gap-4 pt-5 gap-y-6 px-3 sm:px-0">
-            {Centers.slice(0,8).map((item, index) => (
+            {Centers.slice(10,18).map((item, index) => (
           <div
             className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500"
             key={index}
@@ -83,6 +83,7 @@ const TopServCenters = () => {
               </div>
               <p className="text-gray-900 text-lg font-medium">{item.service_center_name}</p>
               <p className="text-gray-600 text-sm">{item.serviceType}</p>
+              <p className="text-gray-600 text-sm">{item.service_center_city}</p>
             </div>
           </div>
         ))}

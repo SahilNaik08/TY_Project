@@ -16,16 +16,32 @@ const ServiceCenters = () => {
   const navigate = useNavigate();
 
   const applyFilter = () => {
+    // if (serviceType) {
+    //   setServCent(Centers.filter((cent) => cent.serviceType === serviceType));
+    // } else {
+    //   setServCent(Centers);
+    // }
+
+    let filteredCenters = Centers;
+
     if (serviceType) {
-      setServCent(Centers.filter((cent) => cent.serviceType === serviceType));
-    } else {
-      setServCent(Centers);
+      filteredCenters = filteredCenters.filter(
+        (cent) => cent.serviceType === serviceType
+      );
     }
+
+    if (selectedCity) {
+      filteredCenters = filteredCenters.filter(
+        (cent) => cent.service_center_city === selectedCity
+      );
+    }
+
+    setServCent(filteredCenters);
   };
 
   useEffect(() => {
     applyFilter();
-  }, [Centers, serviceType]);
+  }, [Centers, serviceType, selectedCity]);
 
   return (
     <div>
@@ -152,6 +168,7 @@ const ServiceCenters = () => {
               </div>
                 <p className="text-gray-900 text-lg font-medium">{item.service_center_name}</p>
                 <p className="text-gray-600 text-sm">{item.serviceType}</p>
+                <p className="text-gray-600 text-sm">{item.service_center_city}</p>
               </div>
             </div>
           ))}

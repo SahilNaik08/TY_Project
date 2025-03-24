@@ -71,7 +71,7 @@ const Bookings = () => {
       // setting end time of the date with index
       let endTime = new Date();
       endTime.setDate(today.getDate() + i);
-      endTime.setHours(21, 0, 0, 0);
+      endTime.setHours(19, 0, 0, 0);
 
       // setting hours
       if (today.getDate() === currentDate.getDate()) {
@@ -216,7 +216,7 @@ const Bookings = () => {
     Swal.fire({
       title: "Confirm Booking",
 
-      text: `Do you want to book your slot on ${slotDate} at ${slotTime}?`,
+      text: `Do you want to book your slot for ${slotDate} at ${slotTime}?`,
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Yes, Book Now",
@@ -334,7 +334,7 @@ const Bookings = () => {
 
                 <div className="flex items-center gap-2 text-sm mt-1 text-gray-600">
                   <p>
-                    City: {scInfo.service_center_city}, <br />
+                    City: {scInfo.service_center_city} <br />
                     Services: {scInfo.serviceType}
                   </p>
                 </div>
@@ -350,6 +350,14 @@ const Bookings = () => {
                     {fees}
                   </span>
                 </p>
+
+                <p className="text-gray-500 font-medium mt-4">
+                  About:{" "}
+                  <span className="text-gray-900">
+                    {scInfo.about}
+                  </span>
+                </p>
+
               </div>
 
               {/* Right Side - Reviews */}
