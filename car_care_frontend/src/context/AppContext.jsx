@@ -11,6 +11,7 @@ const AppContextProvider = (props) => {
   const currencySymbol = "₹";
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [Centers, setCenters] = useState([]);
+  const [RoadsideAssistances, setRoadsideAssistances] = useState([]);
 
   //user profile
   const [userData, setUserData] = useState(false)
@@ -38,6 +39,24 @@ const AppContextProvider = (props) => {
           }
   };
 
+  // API function to get roadside assistance services from backend
+  const getRoadsideAsstData = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/api/service-center/roadside-assistance");
+
+      if (data.success) {
+        setRoadsideAssistances(data.results);
+        console.log('Roadside Assistances : ', data.results);
+        
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message);
+    }
+  };
+
   // Getting User Profile using API
   const loadUserProfileData = async () => {
 
@@ -62,6 +81,7 @@ const AppContextProvider = (props) => {
 
   useEffect(() => {
     getCentersData();
+    getRoadsideAsstData();
   }, []);
 
   //useEffect for profile
@@ -83,6 +103,8 @@ const AppContextProvider = (props) => {
     userData, 
     setUserData,
     loadUserProfileData,
+    RoadsideAssistances,
+    getRoadsideAsstData,
   };
 
   return (

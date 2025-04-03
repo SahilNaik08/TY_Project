@@ -1,5 +1,5 @@
 const express = require("express");
-const { addServCenter, allServCent, loginAdmin, bookingsAdmin, bookingCancel, adminDashboard, changeAvailability } = require("../controllers/adminController");
+const { addServCenter, allServCent, loginAdmin, bookingsAdmin, bookingCancel, adminDashboard, changeAvailability, addRoadsideAssistance } = require("../controllers/adminController");
 const upload = require("../middlewares/multer");
 const authAdmin = require("../middlewares/authAdmin");
 //const { changeAvailability } = require("../controllers/ServiceCenterController");
@@ -13,5 +13,6 @@ adminRouter.post('/change-availability', authAdmin, changeAvailability);
 adminRouter.get('/bookings',authAdmin,bookingsAdmin)
 adminRouter.post('/cancel-booking',authAdmin,bookingCancel)
 adminRouter.get('/dashboard',authAdmin,adminDashboard)
+adminRouter.post('/add-roadside-assistance', authAdmin, upload.single('image'), addRoadsideAssistance);
 
 module.exports = adminRouter;

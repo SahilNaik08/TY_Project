@@ -7,12 +7,15 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const [state, setState] = useState("Admin");
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
   const { setScToken } = useContext(ServCenterContext);
   const { setAToken } = useContext(AdminContext);
 
@@ -35,19 +38,20 @@ const Login = () => {
         const { data } = await axios.post(
           backendUrl + "/api/service-center/login",
           {
-            service_center_email: email, service_center_passwd: password
+            service_center_email: email,
+            service_center_passwd: password,
           }
         );
         if (data.success) {
           setScToken(data.token);
           localStorage.setItem("scToken", data.token);
-          console.log(data.token);
-          
         } else {
           toast.error(data.message);
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.error("Login failed. Please try again.");
+    }
   };
 
   return (
@@ -56,7 +60,7 @@ const Login = () => {
         <p className="text-2xl font-semibold m-auto">
           <span className="text-primary">{state}</span> Login
         </p>
-        <div className="w-full ">
+        <div className="w-full">
           <p>Email</p>
           <input
             onChange={(e) => setEmail(e.target.value)}
@@ -66,22 +70,29 @@ const Login = () => {
             required
           />
         </div>
-        <div className="w-full ">
+        <div className="w-full relative">
           <p>Password</p>
           <input
             onChange={(e) => setPassword(e.target.value)}
             value={password}
-            className="border border-[#DADADA] rounded w-full p-2 mt-1"
-            type="password"
+            className="border border-[#DADADA] rounded w-full p-2 mt-1 pr-10"
+            type={showPassword ? "text" : "password"}
             required
           />
+          <button
+            type="button"
+            onClick={togglePasswordVisibility}
+            className="absolute right-3 top-[55%] transform -translate-y-1/2 text-gray-500"
+          >
+            {showPassword ? "👁️" : "👁️‍🗨️"}
+          </button>
         </div>
         <button className="bg-primary text-white w-full py-2 rounded-md text-base">
           Login
         </button>
         {state === "Admin" ? (
           <p>
-            Service Center Login?{" "}
+            Service Center Login? {" "}
             <span
               onClick={() => setState("Service Center")}
               className="text-primary underline cursor-pointer"
@@ -91,7 +102,7 @@ const Login = () => {
           </p>
         ) : (
           <p>
-            Admin Login?{" "}
+            Admin Login? {" "}
             <span
               onClick={() => setState("Admin")}
               className="text-primary underline cursor-pointer"

@@ -237,5 +237,6 @@ CREATE TABLE booking_history (
     FOREIGN KEY (history_id) REFERENCES service_history(history_id) ON DELETE CASCADE
 );
 
+select * from service_center;
 
 

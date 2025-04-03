@@ -11,6 +11,8 @@ import Bookings from "./pages/Bookings";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import { ToastContainer, toast } from "react-toastify";
+import Spares from "./pages/Spares";
+import RoadsideAsst from "./pages/RoadsideAsst";
 
 const App = () => {
   return (
@@ -30,6 +32,8 @@ const App = () => {
         <Route path="/user-profile" element={<UserProfile />} />
         <Route path="/user-bookings" element={<UserBookings />} />
         <Route path="/bookings/:sc_id" element={<Bookings />} />
+        <Route path="/spares" element={<Spares />} />
+        <Route path="/roadside-assistance" element={<RoadsideAsst />} />
       </Routes>
       <Footer />
     </div>

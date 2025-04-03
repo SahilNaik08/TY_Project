@@ -5,21 +5,22 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  //api intg
+  // API Integration
   const { backendUrl, token, setToken } = useContext(AppContext);
-
   const navigate = useNavigate();
 
   const [state, setState] = useState("Sign Up");
-
   const [full_name, setName] = useState("");
   const [user_email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
-
-    console.log("Form Data:", { full_name, email: user_email, password });
 
     try {
       if (state === "Sign Up") {
@@ -70,7 +71,7 @@ const Login = () => {
           desired services.
         </p>
         {state === "Sign Up" ? (
-          <div className="w-full ">
+          <div className="w-full">
             <p>Full Name</p>
             <input
               onChange={(e) => setName(e.target.value)}
@@ -81,7 +82,7 @@ const Login = () => {
             />
           </div>
         ) : null}
-        <div className="w-full ">
+        <div className="w-full">
           <p>Email</p>
           <input
             onChange={(e) => setEmail(e.target.value)}
@@ -91,15 +92,21 @@ const Login = () => {
             required
           />
         </div>
-        <div className="w-full ">
+        <div className="w-full relative">
           <p>Password</p>
           <input
             onChange={(e) => setPassword(e.target.value)}
             value={password}
-            className="border border-zinc-300 rounded w-full p-2 mt-1"
-            type="password"
+            className="border border-zinc-300 rounded w-full p-2 mt-1 pr-10"
+            type={showPassword ? "text" : "password"}
             required
           />
+          <span
+            onClick={togglePasswordVisibility}
+            className="absolute right-3 top-9 cursor-pointer"
+          >
+            {showPassword ? "👁️‍🗨️" : "👁️"}
+          </span>
         </div>
         <button
           type="submit"

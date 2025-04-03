@@ -561,6 +561,24 @@ const fetchReviews = async (req, res) => {
   }
 };
 
+// Get List of Roadside Assistance Services (Excluding Password)
+const roadsideAssistanceList = (req, res) => {
+  try {
+    const sql = `SELECT ra_id, ra_name, ra_email, contact, city, state, image_url, created_at, updated_at FROM roadside_assistance`;
+
+    db.query(sql, (error, results) => {
+      if (error) {
+        console.error("Database query error:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+      }
+
+      res.json({ success: true, results });
+    });
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 module.exports = {
   changeAvailability,
@@ -573,4 +591,5 @@ module.exports = {
   serviceCenterProfile,
   updateServiceCenterProfile,
   fetchReviews,
+  roadsideAssistanceList,
 };

@@ -9,6 +9,7 @@ const {
   serviceCenterDashboard,
   serviceCenterProfile,
   updateServiceCenterProfile, fetchReviews,
+  roadsideAssistanceList,
 } = require("../controllers/ServiceCenterController.js");
 const { addServCenter } = require("../controllers/adminController");
 //const { allServCent } = require('../controllers/adminController');
@@ -58,5 +59,7 @@ centerRouter.post(
 //centerRouter.post("/list", allServCent)
 
 centerRouter.get("/reviews/:sc_id", authServCenter, fetchReviews);
+
+centerRouter.get("/roadside-assistance",roadsideAssistanceList);
 
 module.exports = centerRouter;

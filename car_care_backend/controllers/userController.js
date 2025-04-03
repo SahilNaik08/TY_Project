@@ -162,7 +162,7 @@ const getProfile = async (req, res) => {
     }
 
     // SQL query to fetch user profile (excluding password)
-    const getUserQuery = `SELECT user_id, full_name, user_email, city, state, usr_img, address, phone, dob, gender FROM users WHERE user_id = ?`;
+    const getUserQuery = `SELECT user_id, full_name, user_email, city, state, usr_img, phone, dob, gender FROM users WHERE user_id = ?`;
 
     db.query(getUserQuery, [userId], (err, results) => {
       if (err) {
@@ -188,30 +188,24 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    const { userId, full_name, phone, address, dob, gender } = req.body;
-    //const imageFile = req.file;
+    const { userId, full_name, phone, city, state, dob, gender } = req.body;
 
-    //console.log(req.body);
-
-    if (!userId || !full_name || !phone || !dob || !gender) {
+    if (!userId || !full_name || !phone || !dob || !gender || !city || !state) {
       return res.json({ success: false, message: "Data Missing" });
     }
 
     // Update user profile in MySQL
-    const updateUserQuery = "UPDATE users SET full_name = ?, phone = ?, address = ?, dob = ?, gender = ? WHERE user_id = ?";
+    const updateUserQuery =
+      "UPDATE users SET full_name = ?, phone = ?, city = ?, state = ?, dob = ?, gender = ? WHERE user_id = ?";
 
     db.query(
       updateUserQuery,
-      [full_name, phone, JSON.stringify(address), dob, gender, userId],
-      async (err, result) => {
+      [full_name, phone, city, state, dob, gender, userId],
+      (err, result) => {
         if (err) {
           console.error("Database error:", err);
-          return res
-            .status(500)
-            .json({ success: false, message: "Database error" });
+          return res.status(500).json({ success: false, message: "Database error" });
         }
-
-        
 
         res.json({ success: true, message: "Profile Updated" });
       }
@@ -221,6 +215,7 @@ const updateProfile = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
 
 // API to make a booking
 const bookSlot = async (req, res) => {

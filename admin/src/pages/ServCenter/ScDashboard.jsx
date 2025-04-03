@@ -43,7 +43,7 @@ const ScDashboard = () => {
           <img className='w-14' src={assets.patients_icon} alt="" />
           <div>
             <p className='text-xl font-semibold text-gray-600'>{dashData.totalUsers}</p>
-            <p className='text-gray-400'>Users</p></div>
+            <p className='text-gray-400'>Customers</p></div>
         </div>
       </div>
 

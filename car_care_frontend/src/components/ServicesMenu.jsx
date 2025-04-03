@@ -21,7 +21,13 @@ const ServicesMenu = () => {
             key={index}
             className="flex flex-col items-center text-xs cursor-pointer flex-shrink-0 hover:translate-y-[-10px] transition-all duration-500"
             onClick={() => scrollTo(0, 0)}
-            to={`/service-centers/${item.serviceType}`}
+            to={
+              item.serviceType === "Spare Parts"
+                ? "/spares"
+                : item.serviceType === "Roadside Assistance"
+                ? "/roadside-assistance"
+                : `/service-centers/${item.serviceType}`
+            }
           >
             <img className="w-16 sm:w-24 mb-2 " src={item.image} alt="" />
             <p>{item.serviceType}</p>

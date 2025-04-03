@@ -8,6 +8,7 @@ import axios from "axios";
 
 import Reviews from "../components/Reviews";
 import Swal from "sweetalert2";
+import Services from "../components/Services";
 
 const Bookings = () => {
   const { sc_id } = useParams();
@@ -437,7 +438,7 @@ const Bookings = () => {
           </button>
         </div>
 
-        {/* Common Services */}
+        {/* Common Services
 
         <div
           style={{
@@ -528,7 +529,11 @@ const Bookings = () => {
               ))}
             </tbody>
           </table>
-        </div>
+        </div> */}
+
+        {/* Rendering table ased on serviceType */}
+
+        <Services serviceType={scInfo.serviceType} />
 
         {/*Listing related service centers */}
 
