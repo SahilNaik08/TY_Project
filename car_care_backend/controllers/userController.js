@@ -221,10 +221,14 @@ const updateProfile = async (req, res) => {
 const bookSlot = async (req, res) => {
   try {
     //console.log(req.body);
-    const { sc_id, slotDate, slotTime, userId } = req.body;
+    const { sc_id, slotDate, slotTime, userId,  licensePlate } = req.body;
 
     // console.log(req.body);
     // console.log('sdID : ', scId);
+
+    if (!licensePlate || licensePlate.trim() === "") {
+      return res.json({ success: false, message: "License plate is required" });
+    }
 
     // Fetch service center data
     db.query(
@@ -305,10 +309,10 @@ const bookSlot = async (req, res) => {
             //                       console.log("scData:", scData);
             // console.log("scData.fees:", scData?.fees);
 
-            const fees = scData?.fees || 1500; // Default to 1500 if undefined
+            const fees = scData?.fees || 150; // Default to 150 if undefined
 
             db.query(
-              "INSERT INTO bookings (user_id, sc_id, slot_date, slot_time, user_data, sc_data, amount, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+              "INSERT INTO bookings (user_id, sc_id, slot_date, slot_time, user_data, sc_data, amount, date, license_plate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
               [
                 userId,
                 sc_id,
@@ -318,6 +322,7 @@ const bookSlot = async (req, res) => {
                 JSON.stringify(scData), // Now without slots_booked
                 fees, //default value
                 Date.now(),
+                licensePlate.trim(), // New license plate field
               ],
               (err) => {
                 if (err) {
@@ -368,7 +373,7 @@ const listBookings = async (req, res) => {
     // Fetch user bookings
     db.query(
       // "SELECT * FROM bookings WHERE user_id = ? ORDER BY slot_date DESC, slot_time DESC",
-      "SELECT booking_id, user_id, sc_id, slot_date, slot_time, user_data, sc_data, amount, date, cancelled, is_completed, created_at, updated_at FROM bookings WHERE user_id = ? ORDER BY slot_date DESC, slot_time DESC",
+      "SELECT booking_id, user_id, sc_id, slot_date, slot_time, user_data, sc_data, amount, date, cancelled, is_completed, created_at, updated_at, license_plate FROM bookings WHERE user_id = ? ORDER BY slot_date DESC, slot_time DESC",
       [userId],
       (err, bookingsResult) => {
         if (err) {
@@ -401,6 +406,7 @@ const listBookings = async (req, res) => {
           status: booking.status || "pending", // Default to "pending" if status is missing
           cancelled: booking.cancelled, //  Added this
           isCompleted: booking.is_completed, //  Added this
+          license_plate: booking.license_plate, //  Added this
           userData:
             typeof booking.user_data === "string"
               ? JSON.parse(booking.user_data)

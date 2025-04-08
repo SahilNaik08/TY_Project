@@ -28,6 +28,8 @@ const Bookings = () => {
 
   const [slotTime, setSlotTime] = useState("");
 
+  const [licensePlate, setLicensePlate] = useState("");
+
   const fetchScInfo = async () => {
     console.log("sc id = ", sc_id);
     console.log("centers : ", Centers);
@@ -188,6 +190,16 @@ const Bookings = () => {
       return;
     }
 
+    if (!licensePlate.trim()) {
+      Swal.fire({
+        icon: "error",
+        title: "License Plate Required",
+        text: "Please enter your car's license plate number.",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
     //confirmation alert
     //   // Show confirmation box before proceeding
     // const confirmBooking = window.confirm(
@@ -236,7 +248,7 @@ const Bookings = () => {
         try {
           const { data } = await axios.post(
             backendUrl + "/api/user/book-slot",
-            { sc_id: scIdInt, slotDate, slotTime },
+            { sc_id: scIdInt, slotDate, slotTime, licensePlate },
             { headers: { token } }
           );
 
@@ -353,17 +365,13 @@ const Bookings = () => {
                 </p>
 
                 <p className="text-gray-500 font-medium mt-4">
-                  About:{" "}
-                  <span className="text-gray-900">
-                    {scInfo.about}
-                  </span>
+                  About: <span className="text-gray-900">{scInfo.about}</span>
                 </p>
-
               </div>
 
               {/* Right Side - Reviews */}
               <div className="flex-1">
-                <Reviews sc_id={sc_id}/>
+                <Reviews sc_id={sc_id} />
               </div>
             </div>
           </div>
@@ -428,6 +436,25 @@ const Bookings = () => {
             ) : (
               <p className="text-gray-500">No slots available</p>
             )}
+          </div>
+
+          <div className="mt-4">
+            <label
+              htmlFor="licensePlate"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              License Plate Number <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="licensePlate"
+              name="licensePlate"
+              value={licensePlate}
+              onChange={(e) => setLicensePlate(e.target.value)}
+              placeholder="e.g. GA07AJ1021"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+              required
+            />
           </div>
 
           <button

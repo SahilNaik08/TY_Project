@@ -36,6 +36,10 @@ const AddServCenter = () => {
     if (!name || !email || !password || !city || !state || !about)
       return toast.error("All fields are required!");
 
+    if (!isAlphabetOnly(name)) {
+      return toast.error("Service Center name should contain only letters!");
+    }
+
     if (!isValidEmail(email)) {
       return toast.error("Please enter a valid email address!");
     }

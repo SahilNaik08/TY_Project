@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use;
 app.use(cors());
 
-// 🕘 CRON JOB: Runs every day at 9:00 AM
+// CRON JOB: Runs every day at 9:00 AM
 cron.schedule(
   "10 15 11 * * *",
   async () => {
@@ -42,7 +42,7 @@ cron.schedule(
       );
       console.log({ bookings });
 
-      // 📩 Send reminders
+      // Send reminders
       for (const booking of bookings) {
         await sendBookingReminder(
           booking.user_data.user_email,

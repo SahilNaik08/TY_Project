@@ -3,6 +3,9 @@ const db = connectDB(); // Get MySQL DB connection
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+const { sendBookingCompletedEmail } = require("../emailService");
+const { sendBookingCancelledEmail } = require("../emailService");
+
 //const db = require("../models/servCenterModel");
 
 // Change Availability of a Service Center
@@ -226,6 +229,16 @@ const bookingComplete = async (req, res) => {
                 .json({ success: false, message: "Database error" });
             }
 
+            // Send completion email
+            if (bookingData.user_data.user_email) {
+              sendBookingCompletedEmail(
+                bookingData.user_data.user_email,
+                booking_id
+              );
+              console.log('email sent');
+              
+            }
+
             return res.json({ success: true, message: "Booking Completed" });
           });
         } else {
@@ -300,6 +313,14 @@ const bookingCancel = async (req, res) => {
               return res
                 .status(500)
                 .json({ success: false, message: "Database error" });
+            }
+
+             // Send cancellation email
+             if (bookingData.user_data.user_email) {
+              sendBookingCancelledEmail(
+                bookingData.user_data.user_email,
+                booking_id
+              );
             }
 
             return res.json({ success: true, message: "Booking Cancelled" });

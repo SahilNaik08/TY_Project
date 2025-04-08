@@ -19,6 +19,9 @@ const AddRoadsideAssistance = () => {
     setShowPassword(!showPassword);
   };
 
+  // Alphabet-Only Validation (City & State)
+  const isAlphabetOnly = (text) => /^[a-zA-Z\s]+$/.test(text);
+
   // Email Validation Function
   const isValidEmail = (email) =>
     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
@@ -43,6 +46,10 @@ const AddRoadsideAssistance = () => {
     if (!name || !email || !password || !contact || !city)
       return toast.error("All fields are required!");
 
+    if (!isAlphabetOnly(name)) {
+      return toast.error("Service Center name should contain only letters!");
+    }    
+
     if (!isValidEmail(email)) {
       return toast.error("Please enter a valid email address!");
     }
@@ -57,6 +64,11 @@ const AddRoadsideAssistance = () => {
         "Please enter a valid 10-digit contact number (not all same digits)."
       );
     }
+
+    if (!isAlphabetOnly(city)) {
+          return toast.error("City name should contain only letters!");
+        }
+    
 
     try {
       const formData = new FormData();
