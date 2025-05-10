@@ -24,7 +24,7 @@ app.use(cors());
 
 // CRON JOB: Runs every day at 9:00 AM
 cron.schedule(
-  "10 15 11 * * *",
+  "55 59 2 * * *",
   async () => {
     console.log("Running booking reminder check...");
 

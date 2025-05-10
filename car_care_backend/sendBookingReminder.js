@@ -9,9 +9,7 @@ const sendBookingReminder = async (userEmail, date, time) => {
       secure: false,
       auth: {
         // Your email password or app-specific password
-        user: "sahilnaik2150@gmail.com",
-        pass: "msrl onhy izdf anoz",
-      },
+              },
     });
 
     await transporter.sendMail({

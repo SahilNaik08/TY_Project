@@ -199,6 +199,19 @@ const Bookings = () => {
       });
       return;
     }
+    
+    // Validate license plate format
+    const licensePlateRegex = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/;
+    if (!licensePlateRegex.test(licensePlate.toUpperCase())) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid License Plate",
+        text: "Please enter a valid license plate (e.g., GA07AJ1021).",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+    
 
     //confirmation alert
     //   // Show confirmation box before proceeding

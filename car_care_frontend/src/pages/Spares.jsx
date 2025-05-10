@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { assets } from "../assets/assets";
 
 const carData = {
   "Maruti Suzuki": ["Swift", "Baleno", "Wagon R", "Dzire", "Ertiga"],
@@ -14,16 +15,16 @@ const carData = {
 
 const sparePartsData = {
   Engine: [
-    { id: 1, name: "Engine Oil", price: "₹1200", imageUrl: "https://via.placeholder.com/150" },
-    { id: 2, name: "Piston Set", price: "₹2500", imageUrl: "https://via.placeholder.com/150" },
-    { id: 3, name: "Camshaft", price: "₹3500", imageUrl: "https://via.placeholder.com/150" },
-    { id: 4, name: "Timing Belt", price: "₹1800", imageUrl: "https://via.placeholder.com/150" },
+    { id: 1, name: "Engine Oil", price: "₹1200", imageUrl: assets.Engineblock },
+    { id: 2, name: "Piston Set", price: "₹2500", imageUrl: assets.Bolt },
+    { id: 3, name: "Camshaft", price: "₹3500", imageUrl: assets.Crankshaft },
+    { id: 4, name: "Timing Belt", price: "₹1800", imageUrl: assets.Bracket },
   ],
   Nuts: [
-    { id: 5, name: "Hex Nut Set", price: "₹200", imageUrl: "https://via.placeholder.com/150" },
-    { id: 6, name: "Lock Nut", price: "₹350", imageUrl: "https://via.placeholder.com/150" },
-    { id: 7, name: "Wing Nut", price: "₹150", imageUrl: "https://via.placeholder.com/150" },
-    { id: 8, name: "Flange Nut", price: "₹300", imageUrl: "https://via.placeholder.com/150" },
+    { id: 5, name: "Hex Nut Set", price: "₹200", imageUrl: assets.Nut },
+    { id: 6, name: "Lock Nut", price: "₹350", imageUrl: assets.Clamp },
+    { id: 7, name: "Wing Nut", price: "₹150", imageUrl: assets.Flywheel },
+    { id: 8, name: "Flange Nut", price: "₹300", imageUrl: assets.Fastener },
   ],
 };
 

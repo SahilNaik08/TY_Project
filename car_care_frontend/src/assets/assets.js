@@ -28,6 +28,15 @@ import Car_wash from "./Icons/car_wash.png";
 import Car_spares from "./Icons/car_spares.png";
 import Repairs from "./Icons/Repairs.png";
 
+import Bolt from "./bolt.png";
+import Bracket from "./bracket.png";
+import Clamp from "./clamp.png";
+import Crankshaft from "./crankshaft.png";
+import Engineblock from "./engine_block.png";
+import Fastener from "./fastener.png";
+import Flywheel from "./flywheel.png";
+import Nut from "./nut.png";
+
 export const assets = {
   appointment_img,
   header_img,
@@ -46,6 +55,15 @@ export const assets = {
   upload_icon,
   stripe_logo,
   razorpay_logo,
+
+  Bolt,
+  Bracket,
+  Clamp,
+  Crankshaft,
+  Engineblock,
+  Fastener,
+  Flywheel,
+  Nut,
 };
 
 export const serviceTypeData = [

@@ -6,8 +6,7 @@ const transporter = createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: "sahilnaik2150@gmail.com",
-    pass: "msrl onhy izdf anoz", // Use app-specific password
+    
   },
 });
 
